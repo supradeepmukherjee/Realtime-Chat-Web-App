@@ -1,11 +1,12 @@
-import {} from 'react'
+import { } from 'react'
+import Layout from '../components/layout/Layout'
 
 const Home = () => {
   return (
     <div>
-        
+
     </div>
   )
 }
 
-export default Home
+export default Layout()(Home)

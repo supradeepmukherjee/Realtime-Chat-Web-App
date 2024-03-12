@@ -1,11 +1,12 @@
-import {} from 'react'
+import { } from 'react'
+import Layout from '../components/layout/Layout'
 
 const Chat = () => {
   return (
     <div>
-        
+      
     </div>
   )
 }
 
-export default Chat
+export default Layout()(Chat)
