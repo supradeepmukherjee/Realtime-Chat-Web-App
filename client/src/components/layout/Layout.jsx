@@ -1,11 +1,17 @@
-import { } from 'react'
 import Header from './Header'
 import Title from '../shared/Title'
 import { Grid } from '@mui/material'
+import ChatList from '../ChatList'
+import { sample } from '../../constants/sample'
+import { useParams } from 'react-router-dom'
 
 const Layout = () => WrappedComponent => {
     // eslint-disable-next-line react/display-name
     return p => {
+        const { id } = useParams()
+        const deleteChatHandler = async (e, id, grpChat) => {
+            
+        }
         return (
             <>
                 <Title />
@@ -22,7 +28,7 @@ const Layout = () => WrappedComponent => {
                             }
                         }}
                         height='100%'>
-
+                        <ChatList chats={sample} id={id} deleteChatHandler={deleteChatHandler} />
                     </Grid>
                     <Grid item xs={12} sm={8} md={5} lg={6} height='100%'>
                         <WrappedComponent {...p} />
