@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Avatar, Button, Container, IconButton, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Avatar as Chavi, Button, Container, IconButton, Paper, Stack, TextField, Typography } from '@mui/material'
 import Camera from '@mui/icons-material/CameraAlt'
 import { HiddenInput } from '../components/Styles'
 import { uNameValidator, passwordValidator } from '../utils/validators'
@@ -71,7 +71,7 @@ const RegisterLogin = () => {
               Register
             </Typography>
             <Stack className='relative w-20 m-auto'>
-              <Avatar className='!w-20 !h-20 object-cover' src={chavi} />
+              <Chavi className='!w-20 !h-20 object-cover' src={chavi} />
               <IconButton className='!absolute left-14 top-14 w-6 h-6 !text-[#ffffff] !bg-[#00000080] hover:text-[#000000b3]' component='label'>
                 <>
                   <Camera className='!w-4' src={chavi} />

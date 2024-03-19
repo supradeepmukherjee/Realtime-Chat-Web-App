@@ -1,27 +1,25 @@
-import { Avatar, AvatarGroup, Box, Stack } from "@mui/material"
+import { Avatar as Chavi, AvatarGroup as ChaviGrp } from "@mui/material"
 
 const ChaviCard = ({ chavi, max = 3 }) => {
     return (
-        <Stack spacing={.5}>
-            <AvatarGroup>
-                <Box className='w-20 h-12'>
-                    {chavi.map((src, i) => <Avatar
-                        src={src}
-                        key={src}
-                        alt={`Chavi ${i}`}
-                        sx={{
-                            width: '3rem',
-                            height: '3rem',
-                            position: 'absolute',
-                            left: {
-                                xs: `${.5 + i}rem`,
-                                sm: `${i}rem`
-                            }
-                        }}
-                    />)}
-                </Box>
-            </AvatarGroup>
-        </Stack>
+        <div className='w-20 h-12'>
+            <ChaviGrp max={max}>
+                {chavi.map((src, i) => <Chavi
+                    src={src}
+                    key={i}
+                    alt={`Chavi ${i}`}
+                    sx={{
+                        width: '3rem',
+                        height: '3rem',
+                        position: 'absolute',
+                        left: {
+                            xs: `${.5 + i}rem`,
+                            sm: `${i}rem`
+                        }
+                    }}
+                />)}
+            </ChaviGrp>
+        </div>
     )
 }
 

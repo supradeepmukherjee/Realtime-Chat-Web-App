@@ -4,13 +4,14 @@ import { Grid } from '@mui/material'
 import ChatList from '../ChatList'
 import { sample } from '../../constants/sample'
 import { useParams } from 'react-router-dom'
+import Profile from '../shared/Profile'
 
 const Layout = () => WrappedComponent => {
     // eslint-disable-next-line react/display-name
     return p => {
         const { id } = useParams()
         const deleteChatHandler = async (e, id, grpChat) => {
-            
+
         }
         return (
             <>
@@ -46,7 +47,7 @@ const Layout = () => WrappedComponent => {
                             bgcolor: 'rgba(0,0,0,.8)'
                         }}
                         height='100%'>
-
+                        <Profile />
                     </Grid>
                 </Grid>
             </>)
