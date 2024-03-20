@@ -19,3 +19,12 @@ export const Link = styled(LinkRouter)({
     padding: '1rem',
     '&:hover': { backgroundColor: '#f0f0f0' }
 })
+
+export const InputBox = styled('input')({
+    width: '100%',
+    border: 'none',
+    outline:'none',
+    padding: '0 3rem',
+    borderRadius: '1.5rem',
+    backgroundColor: '#f7f7f7'
+})
