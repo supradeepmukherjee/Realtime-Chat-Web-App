@@ -24,7 +24,7 @@ export const InputBox = styled('input')({
     width: '100%',
     border: 'none',
     outline:'none',
-    padding: '0 3rem',
+    padding: '0 1rem',
     borderRadius: '1.5rem',
     backgroundColor: '#f7f7f7'
 })
