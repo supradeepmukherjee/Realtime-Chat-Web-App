@@ -53,7 +53,7 @@ const Header = () => {
                         <Box>
                             <Button title='Search User' onClick={toggleSearchDialog} icon={<SearchIcon />} />
                             <Button title='Create a Group' onClick={newGroup} icon={<Add />} />
-                            <Button title='Go to Group' onClick={() => navigate('/group')} icon={<Group />} />
+                            <Button title='Go to Groups' onClick={() => navigate('/groups')} icon={<Group />} />
                             <Button title={`Notifications(${0})`} onClick={toggleNotifications} icon={<NotificationIcon />} />
                             <Button title='Logout' onClick={logoutHandler} icon={<Logout />} />
                         </Box>

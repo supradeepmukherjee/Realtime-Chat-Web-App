@@ -1,11 +1,12 @@
 import { Avatar as Chavi, AvatarGroup as ChaviGrp } from "@mui/material"
+import { transformImg } from "../../lib/features"
 
 const ChaviCard = ({ chavi, max = 3 }) => {
     return (
         <div className='w-20 h-12'>
             <ChaviGrp max={max}>
                 {chavi.map((src, i) => <Chavi
-                    src={src}
+                    src={transformImg(src)}
                     key={i}
                     alt={`Chavi ${i}`}
                     sx={{

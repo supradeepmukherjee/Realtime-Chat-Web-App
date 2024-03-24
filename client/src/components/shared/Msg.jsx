@@ -25,7 +25,7 @@ const Msg = ({ msg, user }) => {
                 return (
                     <Box key={publicId}>
                         <a href={url} target='_blank' className="text-black">
-                            {RenderAttachment(file,url)}
+                            {RenderAttachment(file,url)}33930
                         </a>
                     </Box>
                 )

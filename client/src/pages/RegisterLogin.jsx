@@ -74,7 +74,7 @@ const RegisterLogin = () => {
               <Chavi className='!w-20 !h-20 object-cover' src={chavi} />
               <IconButton className='!absolute left-14 top-14 w-6 h-6 !text-[#ffffff] !bg-[#00000080] hover:text-[#000000b3]' component='label'>
                 <>
-                  <Camera className='!w-4' src={chavi} />
+                  <Camera className='!w-4' />
                   <HiddenInput type='file' accept='image/*' onChange={chaviHandler} />
                 </>
               </IconButton>
