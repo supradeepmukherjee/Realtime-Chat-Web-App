@@ -1,10 +1,13 @@
 import { Add, Delete, Done, Edit, KeyboardBackspace as Back, Menu } from '@mui/icons-material'
-import { Box, Button, Drawer, Grid, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material"
-import { useEffect, useState } from "react"
+import { Backdrop, Box, Button, Drawer, Grid, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import ChaviCard from '../components/shared/ChaviCard'
+import UserItem from '../components/shared/UserItem'
 import { Link } from "../components/Styled"
-import { sample } from '../constants/sample'
+import { sample, sampleUsers } from '../constants/sample'
+const DeleteGrp = lazy(() => import('../components/dialog/DeleteGrp'))
+const AddMember = lazy(() => import('../components/dialog/AddMember'))
 
 const Groups = () => {
   const id = useSearchParams()[0].get('grp')
@@ -13,12 +16,14 @@ const Groups = () => {
   const [grpName, setGrpName] = useState('')
   const [updatedGrpName, setUpdatedGrpName] = useState('')
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [AddMemberOpen, setAddMemberOpen] = useState(false)
-  const deleteHandler = () => {
-    setDeleteOpen(true)
+  const [addMemberOpen, setAddMemberOpen] = useState(false)
+  const toggleDelete = () => setDeleteOpen(!deleteOpen)
+  const toggleAddMember = () => setAddMemberOpen(!addMemberOpen)
+  const deleteHandler = async () => {
+
   }
-  const addMember = () => {
-    setAddMemberOpen(true)
+  const removeHandler = async id => {
+
   }
   const updateGrpName = async () => {
     setIsEdit(false)
@@ -69,14 +74,24 @@ const Groups = () => {
               Members
             </Typography>
             <Stack
-              className='max-w-[45rem] w-full box-border gap-8 bg-[#ffe4c4] h-[50vh] overflow-auto'
+              className='max-w-[45rem] w-full box-border gap-8 h-[50vh] overflow-auto'
               padding={{
                 xs: '0',
                 sm: '1rem',
                 md: '1rem 4rem'
               }}
             >
-              members
+              {sampleUsers.map(member => <UserItem
+                key={member._id}
+                user={member}
+                isSelected={true}
+                handler={removeHandler}
+                style={{
+                  boxShadow: '0 0 .5rem rgba(0,0,0,.2)',
+                  padding: '1rem 2rem',
+                  borderRadius: '1rem'
+                }}
+              />)}
             </Stack>
             <Stack
               direction={{
@@ -90,17 +105,23 @@ const Groups = () => {
               }}
               spacing='1rem'
             >
-              <Button color='error' variant='outlined' startIcon={<Delete />} onClick={deleteHandler}>
+              <Button color='error' variant='outlined' startIcon={<Delete />} onClick={toggleDelete}>
                 Delete Group
               </Button>
-              <Button variant='contained' startIcon={<Add />} onClick={addMember}>
+              <Button variant='contained' startIcon={<Add />} onClick={toggleAddMember}>
                 Add Member
               </Button>
             </Stack>
           </>}
       </Grid>
+      {addMemberOpen &&
+        <Suspense fallback={<Backdrop open />}>
+          <AddMember open={deleteOpen} closeHandler={toggleAddMember} deleteHandler={deleteHandler} />
+        </Suspense>}
       {deleteOpen &&
-        <></>}
+        <Suspense fallback={<Backdrop open />}>
+          <DeleteGrp open={deleteOpen} closeHandler={toggleDelete} deleteHandler={deleteHandler} />
+        </Suspense>}
       <Drawer
         open={menuOpen}
         onClose={() => setMenuOpen(false)}

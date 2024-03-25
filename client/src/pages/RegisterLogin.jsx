@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Avatar as Chavi, Button, Container, IconButton, Paper, Stack, TextField, Typography } from '@mui/material'
 import Camera from '@mui/icons-material/CameraAlt'
-import { HiddenInput } from '../components/Styles'
+import { HiddenInput } from '../components/Styled'
 import { uNameValidator, passwordValidator } from '../utils/validators'
 
 const RegisterLogin = () => {

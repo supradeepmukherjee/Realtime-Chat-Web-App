@@ -26,9 +26,9 @@ const Layout = () => WrappedComponent => {
                             display: {
                                 xs: 'none',
                                 sm: 'block'
-                            }
-                        }}
-                        height='100%'>
+                            },
+                            height: '100%',
+                        }}>
                         <ChatList chats={sample} id={id} deleteChatHandler={deleteChatHandler} />
                     </Grid>
                     <Grid item xs={12} sm={8} md={5} lg={6} height='100%'>
