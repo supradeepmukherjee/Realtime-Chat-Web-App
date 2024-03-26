@@ -28,6 +28,7 @@ const Layout = () => WrappedComponent => {
                                 sm: 'block'
                             },
                             height: '100%',
+                            overflowY: 'auto'
                         }}>
                         <ChatList chats={sample} id={id} deleteChatHandler={deleteChatHandler} />
                     </Grid>

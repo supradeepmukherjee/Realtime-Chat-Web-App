@@ -13,7 +13,7 @@ const ChatList = ({
     deleteChatHandler
 }) => {
     return (
-        <Stack width={w}         >
+        <Stack width={w}>
             {chats.map(({ _id, name, chavi, members, grpChat }, i) => {
                 const newMsgAlert = newMsgsAlert.find(({ id }) => id === _id)
                 const isOnline = members.some(_ => online.includes(_id))

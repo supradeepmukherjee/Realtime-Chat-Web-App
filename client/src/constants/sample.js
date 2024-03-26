@@ -13,6 +13,342 @@ export const sample = [
         members: [1, 2],
         grpChat: false
     },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
+    {
+        chavi: ['https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png', 'https://w3schools.com/howto/img_avatar.png',],
+        name: 'human being',
+        _id: '2',
+        members: [1, 2],
+        grpChat: false
+    },
 ]
 
 export const sampleUsers = [

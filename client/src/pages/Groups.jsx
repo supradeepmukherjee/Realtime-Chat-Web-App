@@ -43,7 +43,9 @@ const Groups = () => {
           display: {
             xs: 'none',
             sm: 'block'
-          }
+          },
+          overflowY:'auto',
+          height:'100%'
         }}
       >
         <GroupsList myGrps={sample} id={id} />
