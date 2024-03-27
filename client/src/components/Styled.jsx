@@ -1,5 +1,5 @@
 import { styled } from '@mui/material'
-import { Link as LinkRouter } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 
 export const HiddenInput = styled('input')({
     border: 0,
@@ -13,7 +13,7 @@ export const HiddenInput = styled('input')({
     whiteSpace: 'nowrap',
 })
 
-export const Link = styled(LinkRouter)({
+export const Link = styled(RouterLink)({
     color: '#000',
     textDecoration: 'none',
     padding: '1rem',
@@ -23,8 +23,28 @@ export const Link = styled(LinkRouter)({
 export const InputBox = styled('input')({
     width: '100%',
     border: 'none',
-    outline:'none',
+    outline: 'none',
     padding: '0 1rem',
     borderRadius: '1.5rem',
     backgroundColor: '#f7f7f7'
+})
+
+export const SearchField = styled('input')({
+    width: '20vmax',
+    border: 'none',
+    outline: 'none',
+    padding: '.6rem 1.5rem',
+    borderRadius: '1.5rem',
+    backgroundColor: '#f7f7f7',
+})
+
+export const Button = styled('button')({
+    borderRadius: '1.5rem',
+    padding: '.6rem 1.5rem',
+    border: 'none',
+    outline: 'none',
+    cursor: 'pointer',
+    backgroundColor: 'black',
+    color: 'white',
+    '&:hover': { backgroundColor: 'rgba(0,0,0,.7)' }
 })
