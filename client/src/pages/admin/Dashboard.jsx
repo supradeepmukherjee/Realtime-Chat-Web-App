@@ -29,8 +29,17 @@ const Dashboard = () => {
             <Notifications />
           </Stack>
         </Paper>
-        <Stack className='!flex-row gap-8 flex-wrap'>
-          <Paper elevation='3' className="py-8 px-14 rounded-2xl w-full max-w-[45rem] h-[25rem]">
+        <Stack
+          direction={{
+            xs: 'column',
+            lg: 'row'
+          }}
+          className='gap-8 flex-wrap justify-center'
+          alignItems={{
+            xs: 'center',
+            lg: 'stretch'
+          }}>
+          <Paper elevation='3' className="py-8 px-14 rounded-2xl w-full max-w-[45rem]">
             <Typography variant='h4' margin='2rem 0'>
               Last Messages
             </Typography>
@@ -44,9 +53,9 @@ const Dashboard = () => {
                 sm: '50%'
               }
             }}
-            className='p-4 rounded-2xl flex justify-center items-center relative max-w-[45rem] h-[25rem]'
+            className='p-4 rounded-2xl flex justify-center items-center relative max-w-[45rem]'
           >
-            <DoughnutChart />
+            <DoughnutChart labels={['Personal Chats', 'Group Chats']} val={[177, 78]} />
             <Stack className='!flex-row absolute justify-center items-center gap-2 w-full h-full'>
               <Group />
               <Typography>

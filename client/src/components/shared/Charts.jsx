@@ -1,15 +1,18 @@
 import { ArcElement, CategoryScale, Chart, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip } from 'chart.js'
-import { Line } from 'react-chartjs-2'
+import { Doughnut, Line } from 'react-chartjs-2'
+import { getLast7Days } from '../../lib/features'
 
 Chart.register(ArcElement, CategoryScale, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip)
 
+const labels = getLast7Days()
+
 export const LineChart = ({ val = [] }) => {
     const data = {
-        labels: ['jan', 'feb', 'mar', 'apr', 'may', 'jun',],
+        labels,
         datasets: [{
             data: val,
             label: '',
-            fill: false,
+            fill: true,
             backgroundColor: 'rgba(175,91,191,.2)',
             borderColor: 'rgba(75,191,191,.8)'
         }]
@@ -33,10 +36,27 @@ export const LineChart = ({ val = [] }) => {
         }} />
 }
 
-export const DoughnutChart = () => {
-    return (
-        <>
-
-        </>
-    )
+export const DoughnutChart = ({ val = [], labels = [] }) => {
+    const data = {
+        labels,
+        datasets: [{
+            data: val,
+            label: 'Total Chats vs Group Chats',
+            backgroundColor: ['rgba(175,91,191,.2)', 'red'],
+            hoverBackgroundColor: ['yellow', 'green'],
+            borderColor: ['rgba(75,191,191,.8)', 'orange'],
+            offset: 30
+        }]
+    }
+    return <Doughnut
+        data={data}
+        options={{
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: { display: false },
+            },
+            cutout: 120
+        }}
+        style={{ zIndex: 10 }} />
 }
