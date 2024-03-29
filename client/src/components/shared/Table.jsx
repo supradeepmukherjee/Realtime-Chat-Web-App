@@ -8,14 +8,18 @@ const Table = ({ rows, cols, title, rowHeight }) => {
                 <Typography variant='h4' className='text-center m-8 uppercase'>
                     {title}
                 </Typography>
-                <DataGrid rows={rows} columns={cols} rowHeight={rowHeight}
-                    className='h-[80%] border-0'
+                <DataGrid
+                    rows={rows}
+                    columns={cols}
+                    rowHeight={rowHeight}
                     sx={{
-                        'tableHeader': {
+                        height: '90%',
+                        '.tableHeader': {
                             bgcolor: 'black',
                             color: 'white'
                         }
-                    }} />
+                    }}
+                />
             </Paper>
         </Container>
     )
