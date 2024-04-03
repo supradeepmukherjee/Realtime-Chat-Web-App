@@ -6,7 +6,7 @@ import { errorMiddleware } from './middlewares/error.js'
 import user from './routes/user.js'
 import chat from './routes/chat.js'
 import { connectDB } from './utils/features.js'
-import { createUser } from './seeders/user.js'
+import {  } from './seeders/msg.js'
 
 dotenv.config({ path: './.env' })
 

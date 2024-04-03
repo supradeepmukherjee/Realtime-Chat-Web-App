@@ -17,6 +17,7 @@ const createUser = async n => {
             }))
         }
         await Promise.all(usersPromise)
+        console.log('users created')
     } catch (err) {
         console.log(error)
     }

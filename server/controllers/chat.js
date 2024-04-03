@@ -4,7 +4,7 @@ import { tryCatch } from "../middlewares/error.js"
 import { Chat } from '../models/Chat.js'
 import { User } from '../models/User.js'
 import { Msg } from '../models/Msg.js'
-import { emitEvent } from "../utils/features.js"
+import { delCloudinaryFiles, emitEvent } from "../utils/features.js"
 import { ErrorHandler } from "../utils/utility.js"
 
 const newGrpChat = tryCatch(async (req, res, next) => {
@@ -24,6 +24,7 @@ const newGrpChat = tryCatch(async (req, res, next) => {
 
 const getMyChats = tryCatch(async (req, res, next) => {
     const chats = await Chat.find({ members: req.user }).populate('members', 'name chavi')
+    console.log(chats)
     const transformedChats = chats.map(({ _id, name, members, grpChat }) => {
         const otherPerson = findOtherPerson(members, req.user)
         return {
@@ -176,4 +177,48 @@ const renameGrp = tryCatch(async (req, res, next) => {
     res.status(200).json({ success: true, msg: 'Group Renamed Successfully', chat })
 })
 
-export { newGrpChat, getMyChats, getMyGrps, addMembers, removeMember, leaveGroup, sendAttachments, getGroupDetails, renameGrp }
+const delGroup = tryCatch(async (req, res, next) => {
+    const { id } = req.params
+    const chat = await Chat.findById(id)
+    if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
+    if (chat.grpChat && chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler(403, 'You are not allowed to delete this group'))
+    if (!chat.grpChat && !chat.members.includes(req.user.toString())) return next(new ErrorHandler(403, 'You are not allowed to delete this chat'))
+    const msgsWithAttachments = await Msg.findById({
+        chat: id,
+        attachments: {
+            $exists: true,
+            $ne: []
+        }
+    })
+    const publicIDs = []
+    msgsWithAttachments.forEach(({ attachments }) => {
+        attachments.forEach(a => publicIDs.push(a.publicID))
+    })
+    await Promise.all([
+        delCloudinaryFiles(publicIDs),
+        // delete one chat,
+        // del many msgs using chat id
+    ])
+    // emitEvent(req,refetch_chats,members)
+    res.status(200).json({ success: true, msg: 'Chat Deleted Successfully' })
+})
+
+const getMsgs = tryCatch(async (req, res, next) => {
+    const { id } = req.params
+    const { page = 1 } = req.query
+    const limit = 20
+    const [totalMsgs, msgs] = await Promise.all([
+        Msg.countDocuments({ chat: id }),
+        Msg
+            .find({ chat: id })
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .populate('sender', 'name chavi')
+            .lean()
+    ])
+    const totalPages = Math.ceil(totalMsgs / limit)
+    res.status(200).json({ success: true, msgs, totalPages })
+})
+
+export { newGrpChat, getMyChats, getMyGrps, addMembers, removeMember, leaveGroup, sendAttachments, getGroupDetails, renameGrp, delGroup, getMsgs }

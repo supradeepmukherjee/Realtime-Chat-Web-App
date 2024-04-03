@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { addMembers, getGroupDetails, getMyChats, getMyGrps, leaveGroup, newGrpChat, removeMember, renameGrp, sendAttachments } from '../controllers/chat.js'
+import { addMembers, delGroup, getGroupDetails, getMsgs, getMyChats, getMyGrps, leaveGroup, newGrpChat, removeMember, renameGrp, sendAttachments } from '../controllers/chat.js'
 import { multerAttachments } from '../middlewares/multer.js'
 
 const app = Router()
@@ -11,6 +11,7 @@ app.put('/add-members', addMembers)
 app.put('/remove-member', removeMember)
 app.put('/leave/:id', leaveGroup)
 app.post('/msg', multerAttachments, sendAttachments)
-app.route('/:id').get(getGroupDetails).put(renameGrp).delete()
+app.get('/msg/:id', getMsgs)
+app.route('/:id').get(getGroupDetails).put(renameGrp).delete(delGroup)
 
 export default app
