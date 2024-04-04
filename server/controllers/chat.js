@@ -9,7 +9,6 @@ import { ErrorHandler } from "../utils/utility.js"
 
 const newGrpChat = tryCatch(async (req, res, next) => {
     const { name, members } = req.body
-    if (members.length < 2) return next(new ErrorHandler(400, 'Group must have atleast 3 members'))
     const allMembers = [...members, req.user]
     const chat = await Chat.create({
         name,
@@ -24,7 +23,6 @@ const newGrpChat = tryCatch(async (req, res, next) => {
 
 const getMyChats = tryCatch(async (req, res, next) => {
     const chats = await Chat.find({ members: req.user }).populate('members', 'name chavi')
-    console.log(chats)
     const transformedChats = chats.map(({ _id, name, members, grpChat }) => {
         const otherPerson = findOtherPerson(members, req.user)
         return {
@@ -57,7 +55,6 @@ const getMyGrps = tryCatch(async (req, res, next) => {
 
 const addMembers = tryCatch(async (req, res, next) => {
     const { id, members } = req.body
-    if (!members || members.length < 1) return next(new ErrorHandler(400, 'Please add atleast 1 person'))
     const chat = await Chat.findById(id)
     if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
     if (!chat.grpChat) return next(new ErrorHandler(400, 'Not a Group Chat'))
@@ -68,7 +65,7 @@ const addMembers = tryCatch(async (req, res, next) => {
         !chat.members.includes(m._id.toString())
     ).map(m => m._id)
     chat.members.push(...uniqueMembers)
-    if (chat.members.length > 50) return next(new ErrorHandler(400, 'There can\'t be more than 50 members'))
+    if (chat.members.length > 100) return next(new ErrorHandler(400, 'There can\'t be more than 100 members'))
     await chat.save()
     const allUsersName = allNewMembers.map(m => m.name).join(',')
     emitEvent(
