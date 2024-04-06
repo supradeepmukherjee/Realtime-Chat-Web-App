@@ -47,4 +47,13 @@ const renameGrpValidator = () => [
     body('name', 'Please Enter new Name').notEmpty(),
 ]
 
-export { validateHandler, registerValidator, loginValidator, newGrpValidator, addMembersValidator, removeMemberValidator, sendAttachmentsValidator, chatIDValidator, renameGrpValidator }
+const sendRequestValidator = () => [body('id', 'Please Enter user ID').notEmpty()]
+
+const acceptRequestValidator = () => [
+    body('id', 'Please Enter Request ID').notEmpty(),
+    body('accept')
+        .notEmpty().withMessage('Please either Accept or Reject')
+        .isBoolean().withMessage('Please enter a boolean value for accept field')
+]
+
+export { validateHandler, registerValidator, loginValidator, newGrpValidator, addMembersValidator, removeMemberValidator, sendAttachmentsValidator, chatIDValidator, renameGrpValidator, sendRequestValidator, acceptRequestValidator }

@@ -5,6 +5,7 @@ import { isAuthenticated } from './middlewares/auth.js'
 import { errorMiddleware } from './middlewares/error.js'
 import user from './routes/user.js'
 import chat from './routes/chat.js'
+import admin from './routes/admin.js'
 import { connectDB } from './utils/features.js'
 import {  } from './seeders/msg.js'
 
@@ -23,6 +24,7 @@ app.use('/user', user)
 
 app.use(isAuthenticated)
 app.use('/chat', chat)
+app.use('/admin', admin)
 
 app.use(errorMiddleware)
 

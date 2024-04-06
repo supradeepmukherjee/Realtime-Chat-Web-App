@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { getMyProfile, login, logOut, register, searchUser } from '../controllers/user.js'
-import { loginValidator, registerValidator, validateHandler } from '../lib/validators.js'
+import { acceptRequest, getFriends, getMyProfile, getRequests, login, logOut, register, searchUser, sendRequest } from '../controllers/user.js'
+import { acceptRequestValidator, loginValidator, registerValidator, sendRequestValidator, validateHandler } from '../lib/validators.js'
 import { isAuthenticated } from '../middlewares/auth.js'
 import { singleChavi } from '../middlewares/multer.js'
 
@@ -13,5 +13,9 @@ app.use(isAuthenticated)
 app.get('/my-profile', getMyProfile)
 app.get('/logout', logOut)
 app.get('/search', searchUser)
+app.post('/sendReq', sendRequestValidator(), validateHandler, sendRequest)
+app.put('/acceptReq', acceptRequestValidator(), validateHandler, acceptRequest)
+app.get('/notifications', getRequests)
+app.get('/friends', getFriends)
 
 export default app
