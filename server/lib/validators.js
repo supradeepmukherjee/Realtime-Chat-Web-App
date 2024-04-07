@@ -56,4 +56,6 @@ const acceptRequestValidator = () => [
         .isBoolean().withMessage('Please enter a boolean value for accept field')
 ]
 
-export { validateHandler, registerValidator, loginValidator, newGrpValidator, addMembersValidator, removeMemberValidator, sendAttachmentsValidator, chatIDValidator, renameGrpValidator, sendRequestValidator, acceptRequestValidator }
+const adminLoginValidator = () => [body('key', 'Please Enter the Key').notEmpty()]
+
+export { validateHandler, registerValidator, loginValidator, newGrpValidator, addMembersValidator, removeMemberValidator, sendAttachmentsValidator, chatIDValidator, renameGrpValidator, sendRequestValidator, acceptRequestValidator, adminLoginValidator }
