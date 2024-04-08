@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken"
+import { adminKey } from '../app.js'
 import { tryCatch } from "../middlewares/error.js"
 import { Chat } from '../models/Chat.js'
 import { Msg } from '../models/Msg.js'
@@ -8,7 +9,6 @@ import { ErrorHandler } from "../utils/utility.js"
 
 const login = tryCatch(async (req, res, next) => {
     const { key } = req.body
-    const adminKey = process.env.ADMIN_KEY
     const matched = key === adminKey
     if (!matched) return next(new ErrorHandler(401, 'Invalid Key'))
     const token = jwt.sign(adminKey, process.env.JWT_SECRET)
@@ -16,6 +16,8 @@ const login = tryCatch(async (req, res, next) => {
         .cookie('admin', token, { ...cookieOptions, maxAge: 1000 * 60 * 30 })
         .json({ success: true, msg: 'Welcome Admin!' })
 })
+
+const getAdminData = (req, res) => res.status(200).json({ success: true, admin: true })
 
 const getUsers = tryCatch(async (req, res) => {
     const rawUsers = await User.find()
@@ -109,8 +111,7 @@ const getDashboardStats = tryCatch(async (req, res) => {
 })
 
 const logOut = tryCatch(async (req, res) => {
-
-    res.status(200).json({ success: true, })
+    res.status(200).cookie('admin', null, { ...cookieOptions, maxAge: 0 }).json({ success: true, msg: 'Logged Out Successfully' })
 })
 
-export { login, getUsers, getChats, getMsgs, getDashboardStats, logOut }
+export { login, getAdminData, getUsers, getChats, getMsgs, getDashboardStats, logOut }

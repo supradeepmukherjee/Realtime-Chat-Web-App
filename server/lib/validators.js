@@ -12,7 +12,6 @@ const registerValidator = () => [
     body('uName', 'Please Enter Username').notEmpty(),
     body('password', 'Please Enter Password').notEmpty(),
     body('bio', 'Please Enter Bio').notEmpty(),
-    check('chavi', 'Please Upload Chavi').notEmpty()
 ]
 
 const loginValidator = () => [
@@ -35,10 +34,7 @@ const removeMemberValidator = () => [
     body('userID', 'Please Enter User ID').notEmpty(),
 ]
 
-const sendAttachmentsValidator = () => [
-    body('id', 'Please Enter Chat ID').notEmpty(),
-    check('files').notEmpty().withMessage('Please Upload Files').isArray({ min: 1, max: 5 }).withMessage('1 to 5 Files can be sent at once')
-]
+const sendAttachmentsValidator = () => [body('id', 'Please Enter Chat ID').notEmpty()]
 
 const chatIDValidator = () => [param('id', 'Please Enter Chat ID').notEmpty()]
 

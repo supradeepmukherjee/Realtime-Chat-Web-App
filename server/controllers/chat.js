@@ -121,10 +121,11 @@ const leaveGroup = tryCatch(async (req, res, next) => {
 
 const sendAttachments = tryCatch(async (req, res, next) => {
     const { id } = req.body
-    const [chat, user] = await Promise.all([Chat.findById(id), User.findById(req.user)])
-    if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
     const files = req.files || []
     if (files.length < 1) return next(new ErrorHandler(400, 'Please provide attachments'))
+    if (files.length > 5) return next(new ErrorHandler(400, 'Max. 5 files can be sent at a time'))
+    const [chat, user] = await Promise.all([Chat.findById(id), User.findById(req.user)])
+    if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
     const attachments = []
     const dbMsg = {
         attachments,

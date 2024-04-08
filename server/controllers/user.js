@@ -8,8 +8,9 @@ import { ErrorHandler } from '../utils/utility.js'
 import { new_req, refetch_chats } from '../constants/events.js'
 import { findOtherPerson } from '../lib/helper.js'
 
-const register = tryCatch(async (req, res) => {
+const register = tryCatch(async (req, res, next) => {
     const { name, uName, password, bio } = req.body
+    if (!req.file) return next(new ErrorHandler(400, 'Please upload Chavi'))
     const chavi = {
         publicID: 'fsjriurwiu',
         url: 'ehg2ry9230042nf209094'

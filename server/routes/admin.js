@@ -1,13 +1,14 @@
 import { Router } from 'express'
-import { getChats, getDashboardStats, getMsgs, getUsers, login, logOut } from '../controllers/admin.js'
+import { getAdminData, getChats, getDashboardStats, getMsgs, getUsers, login, logOut } from '../controllers/admin.js'
 import { adminLoginValidator, validateHandler } from '../lib/validators.js'
-import { isAuthenticated } from '../middlewares/auth.js'
+import { isAdmin } from '../middlewares/auth.js'
 
 const app = Router()
 
 app.put('/login', adminLoginValidator(), validateHandler, login)
 
-// app.use(isAuthenticated)
+app.use(isAdmin)
+app.get('/', getAdminData)
 app.get('/logout', logOut)
 app.get('/users', getUsers)
 app.get('/chats', getChats)
