@@ -12,6 +12,8 @@ import { Server } from 'socket.io'
 import { new_msg, alert } from './constants/events.js'
 import { v4 as randomId } from 'uuid'
 import { getSockets } from './lib/helper.js'
+import { Msg } from './models/Msg.js'
+import cors from 'cors'
 
 import { } from './seeders/msg.js'
 
@@ -29,16 +31,24 @@ const userSocketIDs = new Map()
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:4173', 'http://127.0.0.1:5173', 'http://127.0.0.1:4173', process.env.CLIENT_URL],
+    credentials: true
+}))
 
 connectDB(process.env.MONGO_URI)
 
-app.use('/user', user)
+app.use('/api/user', user)
 
 const adminKey = process.env.ADMIN_KEY
-app.use('/admin', admin)
+app.use('/api/admin', admin)
 
 app.use(isAuthenticated)
-app.use('/chat', chat)
+app.use('/api/chat', chat)
+
+io.use((socket, next) => {
+
+})
 
 io.on('connection', socket => {
     console.log('user connected', socket.id)
@@ -54,17 +64,21 @@ io.on('connection', socket => {
                 name: 'user.name'
             }
         }
-        const dbMsg = {
-            content: msg,
-            chat: id,
-            sender: 'user._id'
-        }
         const membersSocket = getSockets(members)
         io.to(membersSocket).emit(new_msg, {
             id,
             msg: realTimeMsg
         })
         io.to(membersSocket).emit(alert, { id })
+        try {
+            await Msg.create({
+                content: msg,
+                chat: id,
+                sender: 'user._id'
+            })
+        } catch (err) {
+            console.log(err)
+        }
     })
     socket.on('disconnect', () => {
         userSocketIDs.delete('user._id.toString()')

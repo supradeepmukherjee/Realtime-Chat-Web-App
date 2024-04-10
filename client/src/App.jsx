@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Loader } from './components/layout/Loader';
 const Home = lazy(() => import('./pages/Home'))
@@ -12,8 +12,15 @@ const Dashboard = lazy(() => import('./pages/admin/Dashboard'))
 const Chats = lazy(() => import('./pages/admin/Chats'))
 const Msgs = lazy(() => import('./pages/admin/Msgs'))
 const Users = lazy(() => import('./pages/admin/Users'))
+import axios from 'axios'
+import { server } from './constants/config';
 
 function App() {
+  useEffect(() => {
+    axios.get(`${server}/user/my-profile`)
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+  }, [])
   return (
     <Router>
       <Suspense fallback={<Loader />}>
