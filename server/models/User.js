@@ -17,6 +17,10 @@ const schema = new Schema({
         select: false,
         minLength: 8
     },
+    about: {
+        type: String,
+        required: true,
+    },
     chavi: {
         publicID: {
             type: String,

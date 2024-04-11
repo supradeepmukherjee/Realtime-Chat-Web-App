@@ -3,19 +3,23 @@ import { tryCatch } from '../middlewares/error.js'
 import { Chat } from '../models/Chat.js'
 import { User } from '../models/User.js'
 import { Request } from '../models/Request.js'
-import { cookieOptions, emitEvent, sendToken } from '../utils/features.js'
+import { cookieOptions, emitEvent, sendToken, uploadToCloudinary } from '../utils/features.js'
 import { ErrorHandler } from '../utils/utility.js'
 import { new_req, refetch_chats } from '../constants/events.js'
 import { findOtherPerson } from '../lib/helper.js'
 
 const register = tryCatch(async (req, res, next) => {
-    const { name, uName, password, bio } = req.body
-    if (!req.file) return next(new ErrorHandler(400, 'Please upload Chavi'))
+    const { name, uName, password, about } = req.body
+    const file = req.file
+    if (!file) return next(new ErrorHandler(400, 'Please upload Chavi'))
+    const userExists = await User.find({ uName })
+    if (userExists.length !== 0) return next(new ErrorHandler(400, 'Username already registered'))
+    const chaviResult = await uploadToCloudinary([file])
     const chavi = {
-        publicID: 'fsjriurwiu',
-        url: 'ehg2ry9230042nf209094'
+        publicID: chaviResult[0].publicID,
+        url: chaviResult[0].url,
     }
-    const user = await User.create({ name, uName, password, chavi, bio })
+    const user = await User.create({ name, uName, password, chavi, about })
     sendToken(res, user, 201, 'Registration Successful')
 })
 

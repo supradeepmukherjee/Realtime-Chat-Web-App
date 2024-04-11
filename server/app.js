@@ -14,10 +14,15 @@ import { v4 as randomId } from 'uuid'
 import { getSockets } from './lib/helper.js'
 import { Msg } from './models/Msg.js'
 import cors from 'cors'
-
+import { v2 } from 'cloudinary'
 import { } from './seeders/msg.js'
 
 dotenv.config({ path: './.env' })
+v2.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_KEY,
+    api_secret: process.env.CLOUD_SECRET,
+})
 
 const port = process.env.PORT || 6000
 const envMode = process.env.NODE_ENV.trim() || 'PRODUCTION'
