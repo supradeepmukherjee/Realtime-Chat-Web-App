@@ -3,15 +3,19 @@ import { useState } from "react"
 import { Search as SearchIcon } from '@mui/icons-material'
 import UserItem from "../shared/UserItem"
 import { sampleUsers } from "../../constants/sample"
+import { useDispatch, useSelector } from "react-redux"
+import { setIsSearch } from "../../redux/reducers/misc"
 
 const Search = () => {
   const [search, setSearch] = useState('')
   const [users, setUsers] = useState(sampleUsers)
-  const makeFriendHandler = async id => {
+  const { isSearch } = useSelector(state => state.misc)
+    const dispatch = useDispatch()
+    const makeFriendHandler = async id => {
 
   }
   return (
-    <Dialog open>
+    <Dialog open={isSearch} onClose={() => dispatch(setIsSearch(!isSearch))}>
       <Stack p='2rem' width='25rem'>
         <DialogTitle textAlign='center'>
           Find People
