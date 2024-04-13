@@ -14,6 +14,7 @@ const RegisterLogin = () => {
   const { user } = useSelector(state => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
   const [login, setLogin] = useState(true)
   const [loginCredentials, setLoginCredentials] = useState({
     uName: '',
@@ -40,6 +41,7 @@ const RegisterLogin = () => {
   const userDetailsChangeHandler = e => setUserDetails({ ...userDetails, [e.target.name]: e.target.value })
   const loginHandler = async e => {
     e.preventDefault()
+    setLoading(true)
     try {
       const { data } = await axios.put(`${server}/user/login`,
         {
@@ -51,7 +53,7 @@ const RegisterLogin = () => {
           headers: { 'Content-Type': 'application/json' }
         }
       )
-      dispatch(userExists(true))
+      dispatch(userExists(data.user))
       toast.success(data.msg)
       redirect('/')
     } catch (err) {
@@ -61,6 +63,7 @@ const RegisterLogin = () => {
   }
   const registerHandler = async e => {
     e.preventDefault()
+    setLoading(true)
     const formData = new FormData()
     formData.append('chavi', chaviFile)
     formData.append('name', userDetails.name)
@@ -75,7 +78,7 @@ const RegisterLogin = () => {
           headers: { 'Content-Type': 'multipart/form-data' }
         }
       )
-      dispatch(userExists(true))
+      dispatch(userExists(data.user))
       toast.success(data.msg)
       redirect('/')
     } catch (err) {
@@ -106,7 +109,7 @@ const RegisterLogin = () => {
               <TextField required fullWidth label='Username' name='uName' margin='normal' value={loginCredentials.uName} onChange={loginCredentialsChangeHandler} />
               <TextField required fullWidth label='Password' name='password' margin='normal' type='password' value={loginCredentials.password} onChange={loginCredentialsChangeHandler} />
               <div className="flex justify-center">
-                <Button variant='contained' type='submit' className='!mt-4'>
+                <Button variant='contained' type='submit' className='!mt-4' disabled={loading}>
                   Login
                 </Button>
               </div>
@@ -137,7 +140,7 @@ const RegisterLogin = () => {
               <TextField required fullWidth label='About' name='about' margin='dense' value={userDetails.about} onChange={userDetailsChangeHandler} />
               <TextField required fullWidth label='Password' name='password' margin='dense' type='password' value={userDetails.password} onChange={userDetailsChangeHandler} />
               <div className="flex justify-center">
-                <Button variant='contained' type='submit' className='!mt-4'>
+                <Button variant='contained' type='submit' className='!mt-4' disabled={loading}>
                   Register
                 </Button>
               </div>

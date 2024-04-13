@@ -1,13 +1,20 @@
-import { Avatar as Chavi, Button, Dialog, DialogTitle, ListItem, Stack, Typography } from "@mui/material"
+import { Avatar as Chavi, Button, Dialog, DialogTitle, ListItem, Skeleton, Stack, Typography } from "@mui/material"
 import { memo } from "react"
-import { sampleNotifications } from "../../constants/sample"
+import { useDispatch, useSelector } from "react-redux"
+import useErrors from "../../hooks/useErrors"
+import { useGetNotificationsQuery } from "../../redux/api/api"
+import { setIsNotification } from "../../redux/reducers/misc"
 
 const Notification = () => {
+  const { isLoading, data, error, isError } = useGetNotificationsQuery()
+  const { isNotification } = useSelector(({ misc }) => misc)
+  const dispatch = useDispatch()
   const friendHandler = async (id, accept) => {
 
   }
+  useErrors([{ error, isError }])
   return (
-    <Dialog open>
+    <Dialog open={isNotification} onClose={()=>dispatch(setIsNotification(!isNotification))}>
       <Stack
         p={{
           xs: '1rem',
@@ -17,19 +24,19 @@ const Notification = () => {
         <DialogTitle>
           Notifications
         </DialogTitle>
-        {sampleNotifications.length > 0 ?
-          sampleNotifications.map(notification => <NotificationItem key={notification._id} notification={notification} handler={friendHandler} />)
-          :
-          <Typography textAlign='center'>
-            No Notifications
-          </Typography>
-        }
+        {isLoading ? <Skeleton /> :
+          (data?.requests?.length > 0 ?
+            data?.requests?.map(notification => <NotificationItem key={notification._id} notification={notification} handler={friendHandler} />)
+            :
+            <Typography textAlign='center'>
+              No Notifications
+            </Typography>
+          )}
       </Stack>
     </Dialog>
   )
 }
 
-// eslint-disable-next-line react/display-name
 const NotificationItem = memo(({ notification, handler }) => {
   const { sender, _id } = notification
   const { chavi, name } = sender
@@ -41,8 +48,8 @@ const NotificationItem = memo(({ notification, handler }) => {
           {name}
         </Typography>
         <Stack direction={{
-          xs:'column',
-          sm:'row'
+          xs: 'column',
+          sm: 'row'
         }}>
           <Button onClick={() => handler(_id, true)} color='success'>
             Accept

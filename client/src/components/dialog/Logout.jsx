@@ -1,12 +1,14 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material"
 import axios from 'axios'
 import { server } from '../../constants/config'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { userNotExists } from '../../redux/reducers/auth'
 import toast from 'react-hot-toast'
+import { setIsLogout } from "../../redux/reducers/misc"
 
-const Logout = ({ closeHandler, open }) => {
+const Logout = () => {
     const dispatch = useDispatch()
+    const { isLogout } = useSelector(({ misc }) => misc)
     const logoutHandler = async () => {
         try {
             const { data } = await axios.get(`${server}/user/logout`, { withCredentials: true })
@@ -18,7 +20,7 @@ const Logout = ({ closeHandler, open }) => {
         }
     }
     return (
-        <Dialog open={open} onClose={closeHandler}>
+        <Dialog open={isLogout} onClose={() => dispatch(setIsLogout(!isLogout))}>
             <DialogTitle>
                 Confirm
             </DialogTitle>
@@ -28,7 +30,7 @@ const Logout = ({ closeHandler, open }) => {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button variant='outlined' onClick={closeHandler}>
+                <Button variant='outlined' onClick={() => dispatch(setIsLogout(!isLogout))}>
                     Cancel
                 </Button>
                 <Button variant='contained' color='error' onClick={logoutHandler}>

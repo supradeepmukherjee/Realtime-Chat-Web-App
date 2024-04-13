@@ -1,21 +1,20 @@
-import Header from './Header'
-import Title from '../shared/Title'
 import { Drawer, Grid, Skeleton } from '@mui/material'
-import ChatList from '../ChatList'
-import { sample } from '../../constants/sample'
-import { useParams } from 'react-router-dom'
-import Profile from '../shared/Profile'
-import { useMyChatsQuery } from '../../redux/api/api'
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsMobile } from '../../redux/reducers/misc'
+import { useParams } from 'react-router-dom'
 import useErrors from '../../hooks/useErrors'
+import { useMyChatsQuery } from '../../redux/api/api'
+import { setIsMobile } from '../../redux/reducers/misc'
+import ChatList from '../ChatList'
+import Profile from '../shared/Profile'
+import Title from '../shared/Title'
+import Header from './Header'
 
 const Layout = () => WrappedComponent => {
     // eslint-disable-next-line react/display-name
     return p => {
         const { id } = useParams()
         const dispatch = useDispatch()
-        const { isNewGrp, isAddMember, isNotification, isMobile, isSearch, isFileMenu, isDeleteMenu, uploadingLoader, selectedDelChat } = useSelector(state => state.misc)
+        const { isAddMember, isMobile, isFileMenu, isDeleteMenu, uploadingLoader, selectedDelChat } = useSelector(state => state.misc)
         const { isLoading, data, isError, refetch, error } = useMyChatsQuery()
         const deleteChatHandler = async (e, id, grpChat) => {
 

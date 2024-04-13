@@ -29,6 +29,7 @@ const login = tryCatch(async (req, res, next) => {
     if (!user) return next(new ErrorHandler(400, 'Username or Password is incorrect'))
     const isMatch = await compare(password, user.password)
     if (!isMatch) return next(new ErrorHandler(400, 'Username or Password is incorrect'))
+    user.password = undefined
     sendToken(res, user, 200, `Welcome Back, ${user.name}`)
 })
 

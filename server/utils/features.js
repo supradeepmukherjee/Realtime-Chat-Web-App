@@ -25,7 +25,7 @@ const sendToken = async (res, user, code, msg) => {
     return res
         .status(code)
         .cookie('user', token, cookieOptions)
-        .json({ success: true, msg })
+        .json({ success: true, msg, user })
 }
 
 const emitEvent = (req, e, users, data) => {

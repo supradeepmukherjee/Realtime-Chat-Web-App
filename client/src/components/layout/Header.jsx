@@ -1,9 +1,9 @@
-import { lazy, Suspense, useState } from 'react'
+import { Add, ExitToApp as LogoutIcon, Group, Menu, Notifications as NotificationIcon, Search as SearchIcon } from '@mui/icons-material'
 import { AppBar, Backdrop, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
-import { Menu, Search as SearchIcon, Add, Group, ExitToApp as LogoutIcon, Notifications as NotificationIcon } from '@mui/icons-material'
+import { lazy, Suspense } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsMobile, setIsSearch } from '../../redux/reducers/misc'
+import { useNavigate } from 'react-router-dom'
+import { setIsLogout, setIsMobile, setIsNewGrp, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
 const Search = lazy(() => import('../dialog/Search'))
 const Notification = lazy(() => import('../dialog/Notification'))
 const NewGroup = lazy(() => import('../dialog/NewGroup'))
@@ -12,13 +12,7 @@ const Logout = lazy(() => import('../dialog/Logout'))
 const Header = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const [groupOpen, setGroupOpen] = useState(false)
-    const [notificationOpen, setNotificationOpen] = useState(false)
-    const [logoutOpen, setLogoutOpen] = useState(false)
-    const { isMobile, isSearch } = useSelector(state => state.misc)
-    const newGroup = () => setGroupOpen(open => !open)
-    const toggleNotifications = () => setNotificationOpen(open => !open)
-    const toggleLogoutDialog = () => setLogoutOpen(open => !open)
+    const { isMobile, isSearch, isNotification, isNewGrp, isLogout } = useSelector(({ misc }) => misc)
     return (
         <>
             <Box className='grow h-16'>
@@ -45,10 +39,10 @@ const Header = () => {
                         <Box sx={{ flexGrow: 1 }} />
                         <Box>
                             <Button title='Search User' onClick={() => dispatch(setIsSearch(!isSearch))} icon={<SearchIcon />} />
-                            <Button title='Create a Group' onClick={newGroup} icon={<Add />} />
+                            <Button title='Create a Group' onClick={() => dispatch(setIsNewGrp(!isNewGrp))} icon={<Add />} />
                             <Button title='Go to Groups' onClick={() => navigate('/groups')} icon={<Group />} />
-                            <Button title={`Notifications(${0})`} onClick={toggleNotifications} icon={<NotificationIcon />} />
-                            <Button title='Logout' onClick={toggleLogoutDialog} icon={<LogoutIcon />} />
+                            <Button title={`Notifications(${0})`} onClick={() => dispatch(setIsNotification(!isNotification))} icon={<NotificationIcon />} />
+                            <Button title='Logout' onClick={() => dispatch(setIsLogout(!isLogout))} icon={<LogoutIcon />} />
                         </Box>
                     </Toolbar>
                 </AppBar>
@@ -58,19 +52,19 @@ const Header = () => {
                     <Search />
                 </Suspense>
             }
-            {groupOpen &&
+            {isNewGrp &&
                 <Suspense fallback={<Backdrop open />}>
                     <NewGroup />
                 </Suspense>
             }
-            {notificationOpen &&
+            {isNotification &&
                 <Suspense fallback={<Backdrop open />}>
                     <Notification />
                 </Suspense>
             }
-            {logoutOpen &&
+            {isLogout &&
                 <Suspense fallback={<Backdrop open />}>
-                    <Logout closeHandler={toggleLogoutDialog} open={logoutOpen} />
+                    <Logout />
                 </Suspense>
             }
         </>
