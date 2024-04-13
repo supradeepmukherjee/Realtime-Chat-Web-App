@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import toast from "react-hot-toast"
 
-export const useErrors = errors => {
+const useErrors = errors => {
     useEffect(() => {
         errors.forEach(({ isError, error, fallback }) => {
             if (isError) {
@@ -11,3 +11,5 @@ export const useErrors = errors => {
         })
     }, [errors])
 }
+
+export default useErrors

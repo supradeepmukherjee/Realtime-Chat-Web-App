@@ -1,6 +1,7 @@
 import { memo } from "react"
 import { Avatar as Chavi, IconButton, ListItem, Stack, Typography } from "@mui/material"
 import { Add, Remove } from '@mui/icons-material'
+import { transformImg } from "../../lib/features"
 
 const UserItem = ({ user, handler, loading, isSelected = false, style }) => {
     const { name, _id, chavi } = user
@@ -15,7 +16,7 @@ const UserItem = ({ user, handler, loading, isSelected = false, style }) => {
                     alignItems: 'center'
                 }}
             >
-                <Chavi />
+                <Chavi src={transformImg(chavi)} />
                 <Typography variant='body1' className="grow line-clamp-1">
                     {name}
                 </Typography>

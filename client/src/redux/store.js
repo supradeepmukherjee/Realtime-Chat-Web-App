@@ -9,7 +9,7 @@ const store = configureStore({
         [api.reducerPath]: api.reducer,
         [miscSlice.name]: miscSlice.reducer,
     },
-    middleware: d => [...d(), api.middleware]
+    middleware: d => d().concat(api.middleware)
 })
 
 export default store

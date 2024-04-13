@@ -1,19 +1,29 @@
-import { Dialog, DialogTitle, InputAdornment, List, Stack, TextField } from "@mui/material"
-import { useState } from "react"
 import { Search as SearchIcon } from '@mui/icons-material'
-import UserItem from "../shared/UserItem"
-import { sampleUsers } from "../../constants/sample"
+import { Dialog, DialogTitle, InputAdornment, List, Stack, TextField } from "@mui/material"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { useLazySearchUserQuery, useSendFriendRequestMutation } from "../../redux/api/api"
 import { setIsSearch } from "../../redux/reducers/misc"
+import UserItem from "../shared/UserItem"
+import useMutation from '../../hooks/useMutation'
 
 const Search = () => {
   const [search, setSearch] = useState('')
-  const [users, setUsers] = useState(sampleUsers)
+  const [users, setUsers] = useState([])
   const { isSearch } = useSelector(state => state.misc)
-    const dispatch = useDispatch()
-    const makeFriendHandler = async id => {
-
-  }
+  const dispatch = useDispatch()
+  const [searchUser] = useLazySearchUserQuery()
+  const [sendFriendRequest, loading] = useMutation(useSendFriendRequestMutation)
+  const makeFriendHandler = id => sendFriendRequest('Sending Friend Request', { id })
+  useEffect(() => {
+    if (search === '') return
+    const timeout = setTimeout(() => {
+      searchUser(search)
+        .then(({ data }) => setUsers(data.users))
+        .catch(err => console.log(err))
+    }, 1000);
+    return () => { clearTimeout(timeout) }
+  }, [search, searchUser])
   return (
     <Dialog open={isSearch} onClose={() => dispatch(setIsSearch(!isSearch))}>
       <Stack p='2rem' width='25rem'>
@@ -33,7 +43,7 @@ const Search = () => {
           }}
         />
         <List>
-          {users.map(user => <UserItem key={user._id} user={user} handler={makeFriendHandler} loading={false} />)}
+          {users.map(user => <UserItem key={user._id} user={user} handler={makeFriendHandler} loading={loading} />)}
         </List>
       </Stack>
     </Dialog>

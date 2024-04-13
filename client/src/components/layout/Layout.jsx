@@ -8,7 +8,7 @@ import Profile from '../shared/Profile'
 import { useMyChatsQuery } from '../../redux/api/api'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsMobile } from '../../redux/reducers/misc'
-import { useErrors } from '../../hooks/hook'
+import useErrors from '../../hooks/useErrors'
 
 const Layout = () => WrappedComponent => {
     // eslint-disable-next-line react/display-name
