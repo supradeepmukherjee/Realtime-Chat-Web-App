@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { lazy, Suspense, useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Loader } from './components/layout/Loader';
 import { server } from './constants/config';
 import { userExists, userNotExists } from './redux/reducers/auth';
-import { Toaster } from 'react-hot-toast'
+import { SocketProvider } from './socket';
 const Home = lazy(() => import('./pages/Home'))
 const RegisterLogin = lazy(() => import('./pages/RegisterLogin'))
 const Chat = lazy(() => import('./pages/Chat'))
@@ -33,7 +34,11 @@ function App() {
           <Routes>
             <Route exact path='/login' element={<RegisterLogin />} />
             <Route exact path='/admin' element={<Login />} />
-            <Route element={<ProtectRoute user={user} />}>
+            <Route element={
+              <SocketProvider>
+                <ProtectRoute user={user} />
+              </SocketProvider>
+            }>
               <Route exact path='/' element={<Home />} />
               <Route exact path='/chat/:id' element={<Chat />} />
               <Route exact path='/groups' element={<Groups />} />

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { ErrorHandler } from "../utils/utility.js"
 import { adminKey } from '../app.js'
+import { User } from '../models/User.js'
 
 const isAuthenticated = (req, res, next) => {
     const { user } = req.cookies
@@ -19,4 +20,20 @@ const isAdmin = (req, res, next) => {
     next()
 }
 
-export { isAuthenticated, isAdmin }
+const socketAuthenticator = async (err, socket, next) => {
+    try {
+        if (err) return next(err)
+        const token = socket.request.cookies.user
+        if (!token) return next(new ErrorHandler(401, 'Please Login First'))
+        const { _id } = jwt.verify(token, process.env.JWT_SECRET)
+        const user = await User.findById(_id)
+        if (!user) return next(new ErrorHandler(404, 'User is not Registered'))
+        socket.user = user
+        return next()
+    } catch (err) {
+        console.log(err)
+        next(new ErrorHandler(401, 'Please Login First'))
+    }
+}
+
+export { isAuthenticated, isAdmin, socketAuthenticator }

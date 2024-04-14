@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import useErrors from '../../hooks/useErrors'
 import { useMyChatsQuery } from '../../redux/api/api'
 import { setIsMobile } from '../../redux/reducers/misc'
+import { getSocket } from '../../socket'
 import ChatList from '../ChatList'
 import Profile from '../shared/Profile'
 import Title from '../shared/Title'
@@ -16,6 +17,7 @@ const Layout = () => WrappedComponent => {
         const dispatch = useDispatch()
         const { isAddMember, isMobile, isFileMenu, isDeleteMenu, uploadingLoader, selectedDelChat } = useSelector(state => state.misc)
         const { isLoading, data, isError, refetch, error } = useMyChatsQuery()
+        const socket = getSocket()
         const deleteChatHandler = async (e, id, grpChat) => {
 
         }

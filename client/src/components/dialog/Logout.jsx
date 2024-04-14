@@ -13,6 +13,7 @@ const Logout = () => {
         try {
             const { data } = await axios.get(`${server}/user/logout`, { withCredentials: true })
             dispatch(userNotExists())
+            dispatch(setIsLogout(false))
             toast.success(data.msg)
         } catch (err) {
             console.log(err)

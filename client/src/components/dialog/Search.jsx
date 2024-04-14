@@ -2,7 +2,7 @@ import { Search as SearchIcon } from '@mui/icons-material'
 import { Dialog, DialogTitle, InputAdornment, List, Stack, TextField } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useLazySearchUserQuery, useSendFriendRequestMutation } from "../../redux/api/api"
+import { useLazySearchUserQuery, useSendRequestMutation } from "../../redux/api/api"
 import { setIsSearch } from "../../redux/reducers/misc"
 import UserItem from "../shared/UserItem"
 import useMutation from '../../hooks/useMutation'
@@ -13,8 +13,8 @@ const Search = () => {
   const { isSearch } = useSelector(state => state.misc)
   const dispatch = useDispatch()
   const [searchUser] = useLazySearchUserQuery()
-  const [sendFriendRequest, loading] = useMutation(useSendFriendRequestMutation)
-  const makeFriendHandler = id => sendFriendRequest('Sending Friend Request', { id })
+  const [sendRequest, loading] = useMutation(useSendRequestMutation)
+  const makeFriendHandler = id => sendRequest('Sending Friend Request', { id })
   useEffect(() => {
     if (search === '') return
     const timeout = setTimeout(() => {

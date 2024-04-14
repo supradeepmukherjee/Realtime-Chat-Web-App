@@ -9,7 +9,7 @@ const Msg = ({ msg, user }) => {
     const { _id, name } = sender
     const sameSender = _id === user._id
     return (
-        <div className={`!self-${sameSender ? 'end' : 'start'} bg-white w-fit rounded p-2`}>
+        <div className={`${sameSender ? 'self-end' : 'self-start'} bg-white w-fit rounded p-2`}>
             {!sameSender &&
                 <Typography className="text-[#2694ab] font-semibold" variant='caption'>
                     {name}
@@ -25,7 +25,7 @@ const Msg = ({ msg, user }) => {
                 return (
                     <Box key={publicId}>
                         <a href={url} target='_blank' className="text-black">
-                            {RenderAttachment(file,url)}
+                            {RenderAttachment(file, url)}
                         </a>
                     </Box>
                 )

@@ -1,21 +1,22 @@
+import { v2 } from 'cloudinary'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
-import { isAuthenticated } from './middlewares/auth.js'
-import { errorMiddleware } from './middlewares/error.js'
-import user from './routes/user.js'
-import chat from './routes/chat.js'
-import admin from './routes/admin.js'
-import { connectDB } from './utils/features.js'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import { new_msg, alert } from './constants/events.js'
 import { v4 as randomId } from 'uuid'
+import { corsOptions } from './constants/config.js'
+import { alert, new_msg } from './constants/events.js'
 import { getSockets } from './lib/helper.js'
+import { isAuthenticated, socketAuthenticator } from './middlewares/auth.js'
+import { errorMiddleware } from './middlewares/error.js'
 import { Msg } from './models/Msg.js'
-import cors from 'cors'
-import { v2 } from 'cloudinary'
+import admin from './routes/admin.js'
+import chat from './routes/chat.js'
+import user from './routes/user.js'
 import { } from './seeders/msg.js'
+import { connectDB } from './utils/features.js'
 
 dotenv.config({ path: './.env' })
 v2.config({
@@ -29,17 +30,12 @@ const envMode = process.env.NODE_ENV.trim() || 'PRODUCTION'
 
 const app = express()
 const server = createServer(app)
-const io = new Server(server, {
-
-})
+const io = new Server(server, { cors: corsOptions })
 const userSocketIDs = new Map()
 
 app.use(express.json())
 app.use(cookieParser())
-app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:4173', 'http://127.0.0.1:5173', 'http://127.0.0.1:4173', process.env.CLIENT_URL],
-    credentials: true
-}))
+app.use(cors(corsOptions))
 
 connectDB(process.env.MONGO_URI)
 
@@ -52,21 +48,23 @@ app.use(isAuthenticated)
 app.use('/api/chat', chat)
 
 io.use((socket, next) => {
-
+    cookieParser()(socket.request, socket.request.res, async err => await socketAuthenticator(err, socket, next))
 })
 
 io.on('connection', socket => {
+    const { user } = socket
     console.log('user connected', socket.id)
-    userSocketIDs.set('user._id.toString()', socket.id)
+    userSocketIDs.set(user._id.toString(), socket.id)
+    console.log(userSocketIDs)
     socket.on(new_msg, async ({ id, members, msg }) => {
         const realTimeMsg = {
-            msg,
+            content: msg,
             id: randomId(),
-            chat: new Date().toISOString(),
-            createdAt: id,
+            chat: id,
+            createdAt: new Date().toISOString(),
             sender: {
-                _id: 'user._id',
-                name: 'user.name'
+                _id: user._id,
+                name: user.name
             }
         }
         const membersSocket = getSockets(members)
@@ -79,14 +77,14 @@ io.on('connection', socket => {
             await Msg.create({
                 content: msg,
                 chat: id,
-                sender: 'user._id'
+                sender: user._id
             })
         } catch (err) {
             console.log(err)
         }
     })
     socket.on('disconnect', () => {
-        userSocketIDs.delete('user._id.toString()')
+        userSocketIDs.delete(user._id.toString())
         console.log('user disconnected')
     })
 })
