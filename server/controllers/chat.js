@@ -203,7 +203,9 @@ const delGroup = tryCatch(async (req, res, next) => {
 
 const getMsgs = tryCatch(async (req, res, next) => {
     const { id } = req.params
-    const { page = 1 } = req.query
+    const { page } = req.query
+    const chat = await Chat.findById(id)
+    if (!chat) return next(new ErrorHandler(404, 'No Messages found as chat doesn\'t exist'))
     const limit = 20
     const [totalMsgs, msgs] = await Promise.all([
         Msg.countDocuments({ chat: id }),

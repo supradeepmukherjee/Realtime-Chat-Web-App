@@ -53,9 +53,8 @@ io.use((socket, next) => {
 
 io.on('connection', socket => {
     const { user } = socket
-    console.log('user connected', socket.id)
     userSocketIDs.set(user._id.toString(), socket.id)
-    console.log(userSocketIDs)
+    // console.log(userSocketIDs)
     socket.on(new_msg, async ({ id, members, msg }) => {
         const realTimeMsg = {
             content: msg,

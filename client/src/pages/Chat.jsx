@@ -1,7 +1,9 @@
 import { AttachFile, Send } from '@mui/icons-material'
 import { IconButton, Skeleton, Stack } from '@mui/material'
-import { useCallback, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import FileMenu from '../components/dialog/FileMenu'
 import Layout from '../components/layout/Layout'
@@ -10,40 +12,83 @@ import { InputBox } from '../components/Styled'
 import { new_msg } from '../constants/events'
 import useErrors from '../hooks/useErrors'
 import useSocketEvents from '../hooks/useSocketEvents'
-import { useChatDetailsQuery } from '../redux/api/api'
+import { useChatDetailsQuery, useLazyGetMsgsQuery } from '../redux/api/api'
+import { setIsFileMenu } from '../redux/reducers/misc'
 import { getSocket } from '../socket'
 
 const Chat = () => {
-  const container = useRef(null)
   const [msgs, setMsgs] = useState([])
   const [msg, setMsg] = useState('')
+  const [page, setPage] = useState(2)
+  const [hasMore, setHasMore] = useState(true)
+  const [anchorEl, setAnchorEl] = useState(null)
   const { id } = useParams()
+  const dispatch = useDispatch()
   const { user } = useSelector(({ auth }) => auth)
-  const { isLoading, data, error, isError } = useChatDetailsQuery(id, { skip: !id })
+  const { isLoading, data, error, isError } = useChatDetailsQuery({ id, skip: !id })
+  const [getMsgs] = useLazyGetMsgsQuery()
   const socket = getSocket()
+  const fileOpenHandler = async e => {
+    dispatch(setIsFileMenu(true))
+    setAnchorEl(e.target)
+  }
   const submitHandler = async e => {
     e.preventDefault()
     if (!msg.trim()) return
     socket.emit(new_msg, { id, members: data.chat.members, msg })
     setMsg('')
   }
-  const newMsgsHandler = useCallback((data) => {
-    console.log(data)
-    setMsgs(prev => [...prev, data.msg])
+  const newMsgsHandler = useCallback(data => {
+    setMsgs(prev => [data.msg, ...prev])
   }, [])
-  console.log(msgs)
   const eventHandler = { [new_msg]: newMsgsHandler }
   useSocketEvents(socket, eventHandler)
   useErrors([{ error, isError }])
+  useEffect(() => {
+    getMsgs({ id, page: 1 })
+      .then(({ isError: msgsIsError, error: msgsError, data: msgsData }) => {
+        setMsgs(msgsData.msgs)
+        if (msgsIsError) toast.error(msgsError.data.msg)
+      })
+      .catch(err => {
+        console.log(err)
+        toast.error('Something went wrong')
+      })
+  }, [id])
+  const fetch = async () => {
+    try {
+      const { isError: msgsIsError, error: msgsError, data: msgsData } = await getMsgs({ id, page })
+      setMsgs(prev => [...prev, ...msgsData.msgs])
+      Math.ceil(msgs.length / 20) < msgsData.totalPages ? setHasMore(true) : setHasMore(false)
+      if (msgsIsError) toast.error(msgsError.data.msg)
+      setPage(p => p + 1)
+    } catch (err) {
+      console.log(err)
+      toast.error('Something went wrong')
+    }
+  }
   return (
     isLoading ? <Skeleton /> :
       <>
-        <Stack ref={container} spacing='1rem' className='box-border p-4 bg-[#f7f7f7] h-[90%] overflow-x-hidden overflow-y-auto'>
-          {msgs.map(msg => <Msg key={msg._id} msg={msg} user={user} />)}
-        </Stack>
+        <div className='box-border p-4 bg-[#f7f7f7] h-[90%] flex flex-col-reverse overflow-x-hidden overflow-y-auto' id="scrollableDiv">
+          <InfiniteScroll
+            hasMore={hasMore}
+            dataLength={msgs.length}
+            next={fetch}
+            inverse={true}
+            scrollableTarget="scrollableDiv"
+            style={{
+              display: 'flex',
+              flexDirection: 'column-reverse',
+              gap: '1rem'
+            }}
+          >
+            {msgs.map(msg => <Msg key={msg._id ? msg._id : msg.id} msg={msg} user={user} />)}
+          </InfiniteScroll>
+        </div>
         <form className="h-[10%]" onSubmit={submitHandler}>
           <Stack direction='row' className='p-2'>
-            <IconButton>
+            <IconButton onClick={fileOpenHandler}>
               <AttachFile />
             </IconButton>
             <InputBox placeholder='Type Message Here...' value={msg} onChange={e => setMsg(e.target.value)} />
@@ -52,7 +97,7 @@ const Chat = () => {
             </IconButton>
           </Stack>
         </form>
-        <FileMenu />
+        <FileMenu anchorEl={anchorEl} />
       </>
   )
 }
