@@ -97,7 +97,7 @@ const Chat = () => {
             </IconButton>
           </Stack>
         </form>
-        <FileMenu anchorEl={anchorEl} />
+        <FileMenu anchorEl={anchorEl} id={id} />
       </>
   )
 }

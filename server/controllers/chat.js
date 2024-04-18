@@ -1,10 +1,10 @@
-import { alert, new_attachments, new_msg, refetch_chats } from "../constants/events.js"
+import { alert, new_msg, new_msg_alert, refetch_chats } from "../constants/events.js"
 import { findOtherPerson } from "../lib/helper.js"
 import { tryCatch } from "../middlewares/error.js"
 import { Chat } from '../models/Chat.js'
-import { User } from '../models/User.js'
 import { Msg } from '../models/Msg.js'
-import { delCloudinaryFiles, emitEvent } from "../utils/features.js"
+import { User } from '../models/User.js'
+import { delCloudinaryFiles, emitEvent, uploadToCloudinary } from "../utils/features.js"
 import { ErrorHandler } from "../utils/utility.js"
 
 const newGrpChat = tryCatch(async (req, res, next) => {
@@ -126,7 +126,7 @@ const sendAttachments = tryCatch(async (req, res, next) => {
     if (files.length > 5) return next(new ErrorHandler(400, 'Max. 5 files can be sent at a time'))
     const [chat, user] = await Promise.all([Chat.findById(id), User.findById(req.user)])
     if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
-    const attachments = []
+    const attachments = await uploadToCloudinary(files)
     const dbMsg = {
         attachments,
         sender: req.user,
@@ -141,8 +141,8 @@ const sendAttachments = tryCatch(async (req, res, next) => {
         }
     }
     const msg = await Msg.create(dbMsg)
-    emitEvent(req, new_attachments, chat.members, { msg: realTimeMsg, id })
-    emitEvent(req, new_msg, chat.members, { id })
+    emitEvent(req, new_msg, chat.members, { msg: realTimeMsg, id })
+    emitEvent(req, new_msg_alert, chat.members, { id })
     res.status(200).json({ success: true, msg })
 })
 

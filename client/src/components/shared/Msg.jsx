@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Box, Typography } from "@mui/material"
 import moment from "moment"
 import { memo } from "react"
@@ -6,8 +7,8 @@ import RenderAttachment from "./RenderAttachment"
 
 const Msg = ({ msg, user }) => {
     const { sender, content, attachments, createdAt } = msg
-    const { _id, name } = sender
-    const sameSender = _id === user._id
+    const { _id, name, id } = sender
+    const sameSender = (id || _id) === user._id
     return (
         <div className={`${sameSender ? 'self-end' : 'self-start'} bg-white w-fit rounded p-2`}>
             {!sameSender &&
@@ -20,10 +21,10 @@ const Msg = ({ msg, user }) => {
                     {content}
                 </Typography>
             }
-            {attachments?.map(({ url, publicId }) => {
+            {attachments?.map(({ url }) => {
                 const file = fileFormat(url)
                 return (
-                    <Box key={publicId}>
+                    <Box key={url}>
                         <a href={url} target='_blank' className="text-black">
                             {RenderAttachment(file, url)}
                         </a>

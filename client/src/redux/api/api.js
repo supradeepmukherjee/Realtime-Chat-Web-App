@@ -59,8 +59,16 @@ const api = createApi({
             }),
             providesTags: ['Msg']
         }),
+        sendAttachments: builder.mutation({
+            query: data => ({
+                url: `/chat/attachment`,
+                method: `POST`,
+                body: data,
+                credentials: 'include'
+            }),
+        }),
     })
 })
 
 export default api
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery } = api
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation } = api

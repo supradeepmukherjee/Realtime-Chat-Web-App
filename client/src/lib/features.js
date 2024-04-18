@@ -9,9 +9,7 @@ export const fileFormat = url => {
     else return 'file'
 }
 
-export const transformImg = (url, width = 100) => {
-    return url
-}
+export const transformImg = (url, width = 100) =>  url.replace('upload/', `upload/dpr_auto/w_${width}/`)
 
 export const getLast7Days = () => {
     const currentDate = moment()

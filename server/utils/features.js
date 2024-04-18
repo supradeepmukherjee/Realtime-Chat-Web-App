@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import { connect } from "mongoose"
 import { v2 } from 'cloudinary'
 import { v4 as randomId } from 'uuid'
-import { getBase64 } from '../lib/helper.js'
+import { getBase64, getSockets } from '../lib/helper.js'
 
 const cookieOptions = {
     maxAge: 60 * 60 * 24 * 15000,
@@ -29,7 +29,9 @@ const sendToken = async (res, user, code, msg) => {
 }
 
 const emitEvent = (req, e, users, data) => {
-    console.log(e)
+    const io = req.app.get('io')
+    const usersSocket = getSockets(users)
+    io.to(usersSocket).emit(e, data)
 }
 
 const uploadToCloudinary = async files => {

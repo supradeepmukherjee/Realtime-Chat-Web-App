@@ -7,7 +7,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { v4 as randomId } from 'uuid'
 import { corsOptions } from './constants/config.js'
-import { alert, new_msg } from './constants/events.js'
+import { new_msg, new_msg_alert } from './constants/events.js'
 import { getSockets } from './lib/helper.js'
 import { isAuthenticated, socketAuthenticator } from './middlewares/auth.js'
 import { errorMiddleware } from './middlewares/error.js'
@@ -32,6 +32,7 @@ const app = express()
 const server = createServer(app)
 const io = new Server(server, { cors: corsOptions })
 const userSocketIDs = new Map()
+app.set('io', io)
 
 app.use(express.json())
 app.use(cookieParser())
@@ -71,7 +72,7 @@ io.on('connection', socket => {
             id,
             msg: realTimeMsg
         })
-        io.to(membersSocket).emit(alert, { id })
+        io.to(membersSocket).emit(new_msg_alert, { id })
         try {
             await Msg.create({
                 content: msg,
