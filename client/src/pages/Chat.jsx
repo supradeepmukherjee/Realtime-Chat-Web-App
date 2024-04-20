@@ -1,15 +1,16 @@
 import { AttachFile, Send } from '@mui/icons-material'
 import { IconButton, Skeleton, Stack } from '@mui/material'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import FileMenu from '../components/dialog/FileMenu'
 import Layout from '../components/layout/Layout'
+import { Typing } from '../components/layout/Loader'
 import Msg from '../components/shared/Msg'
 import { InputBox } from '../components/Styled'
-import { new_msg } from '../constants/events'
+import { new_msg, start_typing, stop_typing } from '../constants/events'
 import useErrors from '../hooks/useErrors'
 import useSocketEvents from '../hooks/useSocketEvents'
 import { useChatDetailsQuery, useLazyGetMsgsQuery } from '../redux/api/api'
@@ -22,27 +23,55 @@ const Chat = () => {
   const [msg, setMsg] = useState('')
   const [page, setPage] = useState(2)
   const [hasMore, setHasMore] = useState(true)
+  const [iAmTyping, setIAmTyping] = useState(false)
+  const [userTyping, setUserTyping] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
+  const typingTimeout = useRef(null)
   const { id } = useParams()
   const dispatch = useDispatch()
   const { user } = useSelector(({ auth }) => auth)
   const { isLoading, data, error, isError } = useChatDetailsQuery({ id, skip: !id })
   const [getMsgs] = useLazyGetMsgsQuery()
   const socket = getSocket()
+  const members = data?.chat?.members
   const fileOpenHandler = async e => {
     dispatch(setIsFileMenu(true))
     setAnchorEl(e.target)
   }
+  const msgChangeHandler = e => {
+    setMsg(e.target.value)
+    if (!iAmTyping) {
+      socket.emit(start_typing, { members, id })
+      setIAmTyping(true)
+    }
+    if (typingTimeout.current) clearTimeout(typingTimeout.current)
+    typingTimeout.current = setTimeout(() => {
+      socket.emit(stop_typing, { members, id })
+      setIAmTyping(false)
+    }, 1800)
+  }
   const submitHandler = async e => {
     e.preventDefault()
     if (!msg.trim()) return
-    socket.emit(new_msg, { id, members: data.chat.members, msg })
+    socket.emit(new_msg, { id, members, msg })
     setMsg('')
   }
-  const newMsgsHandler = useCallback(data => {
+  const newMsgsListener = useCallback(data => {
     setMsgs(prev => [data.msg, ...prev])
   }, [])
-  const eventHandler = { [new_msg]: newMsgsHandler }
+  const startTypingListener = useCallback(data => {
+    if (data.id !== id) return
+    setUserTyping(true)
+  }, [id])
+  const stopTypingListener = useCallback(data => {
+    if (data.id !== id) return
+    setUserTyping(false)
+  }, [id])
+  const eventHandler = {
+    [new_msg]: newMsgsListener,
+    [start_typing]: startTypingListener,
+    [stop_typing]: stopTypingListener,
+  }
   useSocketEvents(socket, eventHandler)
   useErrors([{ error, isError }])
   useEffect(() => {
@@ -93,6 +122,7 @@ const Chat = () => {
               gap: '1rem'
             }}
           >
+            {userTyping && <Typing />}
             {msgs.map(msg => <Msg key={msg._id ? msg._id : msg.id} msg={msg} user={user} />)}
           </InfiniteScroll>
         </div>
@@ -101,7 +131,7 @@ const Chat = () => {
             <IconButton onClick={fileOpenHandler}>
               <AttachFile />
             </IconButton>
-            <InputBox placeholder='Type Message Here...' value={msg} onChange={e => setMsg(e.target.value)} />
+            <InputBox placeholder='Type Message Here...' value={msg} onChange={msgChangeHandler} />
             <IconButton type='submit' className='!bg-green-400 ml-4 p-2 hover:!bg-green-500'>
               <Send />
             </IconButton>

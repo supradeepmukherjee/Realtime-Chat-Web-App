@@ -7,7 +7,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { v4 as randomId } from 'uuid'
 import { corsOptions } from './constants/config.js'
-import { new_msg, new_msg_alert } from './constants/events.js'
+import { new_msg, new_msg_alert, start_typing, stop_typing } from './constants/events.js'
 import { getSockets } from './lib/helper.js'
 import { isAuthenticated, socketAuthenticator } from './middlewares/auth.js'
 import { errorMiddleware } from './middlewares/error.js'
@@ -55,7 +55,6 @@ io.use((socket, next) => {
 io.on('connection', socket => {
     const { user } = socket
     userSocketIDs.set(user._id.toString(), socket.id)
-    // console.log(userSocketIDs)
     socket.on(new_msg, async ({ id, members, msg }) => {
         const realTimeMsg = {
             content: msg,
@@ -82,6 +81,14 @@ io.on('connection', socket => {
         } catch (err) {
             console.log(err)
         }
+    })
+    socket.on(start_typing, ({ members, id }) => {
+        console.log('type', members, id)
+        socket.to(getSockets(members)).emit(start_typing, { id })
+    })
+    socket.on(stop_typing, ({ members, id }) => {
+        console.log('type', members, id)
+        socket.to(getSockets(members)).emit(stop_typing, { id })
     })
     socket.on('disconnect', () => {
         userSocketIDs.delete(user._id.toString())

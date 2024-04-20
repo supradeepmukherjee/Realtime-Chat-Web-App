@@ -1,7 +1,7 @@
-import { styled } from '@mui/material'
+import { keyframes, Skeleton, styled } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 
-export const HiddenInput = styled('input')({
+const HiddenInput = styled('input')({
     border: 0,
     clipPath: 'circle(0%)',
     height: 1,
@@ -13,14 +13,14 @@ export const HiddenInput = styled('input')({
     whiteSpace: 'nowrap',
 })
 
-export const Link = styled(RouterLink)({
+const Link = styled(RouterLink)({
     color: '#000',
     textDecoration: 'none',
     padding: '1rem',
     '&:hover': { backgroundColor: '#f0f0f0' }
 })
 
-export const InputBox = styled('input')({
+const InputBox = styled('input')({
     width: '100%',
     border: 'none',
     outline: 'none',
@@ -29,7 +29,7 @@ export const InputBox = styled('input')({
     backgroundColor: '#f7f7f7'
 })
 
-export const SearchField = styled('input')({
+const SearchField = styled('input')({
     width: '20vmax',
     border: 'none',
     outline: 'none',
@@ -38,7 +38,7 @@ export const SearchField = styled('input')({
     backgroundColor: '#f7f7f7',
 })
 
-export const Button = styled('button')({
+const Button = styled('button')({
     borderRadius: '1.5rem',
     padding: '.6rem 1.5rem',
     border: 'none',
@@ -48,3 +48,16 @@ export const Button = styled('button')({
     color: 'white',
     '&:hover': { backgroundColor: 'rgba(0,0,0,.7)' }
 })
+
+const bounce = keyframes`
+    0%{transform:scale(1);}
+    50%{transform:scale(1.5);}
+    100%{transform:scale(1);}
+`
+
+const BouncingSkeleton = styled(Skeleton)({
+    animation: `${bounce} 1s infinite`,
+    backgroundColor: 'green'
+})
+
+export { Button, HiddenInput, InputBox, Link, SearchField, BouncingSkeleton }
