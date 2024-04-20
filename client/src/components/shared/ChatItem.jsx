@@ -23,12 +23,13 @@ const ChatItem = ({
                         <Typography>
                             {name}
                         </Typography>
+                    </Stack>
+                    {isOnline || newMsgAlert && <Box className={`w-[20px] h-[20px] rounded-[50px] ${isOnline ? 'bg-green-500' : 'bg-red-500'} text-white absolute right-4 flex items-center justify-center`}>
                         {newMsgAlert &&
                             <Typography>
-                                {newMsgAlert.count} New Message(s)
+                                {newMsgAlert.count}
                             </Typography>}
-                    </Stack>
-                    {isOnline && <Box className='w-[10px] h-[10px] rounded-[50px] bg-green-500 absolute top-1/2 right-4' />}
+                    </Box>}
                 </div>
             </div>
         </Link>

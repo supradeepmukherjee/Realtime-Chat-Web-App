@@ -59,6 +59,8 @@ const RegisterLogin = () => {
     } catch (err) {
       console.log(err)
       toast.error(err?.response?.data?.msg || 'Something went wrong')
+    } finally {
+      setLoading(false)
     }
   }
   const registerHandler = async e => {
@@ -84,6 +86,8 @@ const RegisterLogin = () => {
     } catch (err) {
       console.log(err)
       toast.error(err?.response?.data?.msg || 'Something went wrong')
+    } finally {
+      setLoading(false)
     }
   }
   useEffect(() => {

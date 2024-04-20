@@ -6,10 +6,7 @@ const ChatList = ({
     chats = [],
     id,
     online = [],
-    newMsgsAlert = [{
-        id: null,
-        count: 0
-    }],
+    newMsgsAlert,
     deleteChatHandler
 }) => {
     return (

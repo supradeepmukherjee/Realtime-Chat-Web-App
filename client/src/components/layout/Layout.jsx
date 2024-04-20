@@ -1,34 +1,55 @@
 import { Drawer, Grid, Skeleton } from '@mui/material'
+import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { new_msg_alert, new_req } from '../../constants/events'
 import useErrors from '../../hooks/useErrors'
+import useSocketEvents from '../../hooks/useSocketEvents'
 import { useMyChatsQuery } from '../../redux/api/api'
 import { setIsMobile } from '../../redux/reducers/misc'
+import { incrementNotificationCount, setNewMsgsAlert } from '../../redux/reducers/chat'
 import { getSocket } from '../../socket'
 import ChatList from '../ChatList'
 import Profile from '../shared/Profile'
 import Title from '../shared/Title'
 import Header from './Header'
+import { getOrSave_Storage } from '../../lib/features'
 
 const Layout = () => WrappedComponent => {
     // eslint-disable-next-line react/display-name
     return p => {
         const { id } = useParams()
         const dispatch = useDispatch()
-        const { isAddMember, isMobile, isFileMenu, isDeleteMenu, uploadingLoader, selectedDelChat } = useSelector(state => state.misc)
-        const { isLoading, data, isError, refetch, error } = useMyChatsQuery()
+        const { isAddMember, isMobile, isFileMenu, isDeleteMenu, uploadingLoader, selectedDelChat } = useSelector(({ misc }) => misc)
+        const { newMsgsAlert } = useSelector(({ chat }) => chat)
+        const { isLoading, data, isError, error } = useMyChatsQuery()
         const socket = getSocket()
         const deleteChatHandler = async (e, id, grpChat) => {
 
         }
+        const newMsgAlertHandler = useCallback(data => {
+            if (data.id === id) return
+            dispatch(setNewMsgsAlert(data.id))
+        }, [dispatch, id])
+        const newReqHandler = useCallback(() => {
+            dispatch(incrementNotificationCount())
+        }, [dispatch])
+        const eventHandlers = {
+            [new_msg_alert]: newMsgAlertHandler,
+            [new_req]: newReqHandler,
+        }
+        useSocketEvents(socket, eventHandlers)
         useErrors([{ isError, error }])
+        useEffect(() => {
+            getOrSave_Storage(false, new_msg_alert, newMsgsAlert)
+        }, [newMsgsAlert])
         return (
             <>
                 <Title />
-                <Header />
+                <Header unreadChats={newMsgsAlert.length - 1} />
                 {isLoading ? <Skeleton /> :
                     <Drawer open={isMobile} onClose={() => dispatch(setIsMobile(!isMobile))}>
-                        <ChatList w='70vw' chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler} />
+                        <ChatList w='70vw' chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler}  newMsgsAlert={newMsgsAlert} />
                     </Drawer>}
                 <Grid container height={'calc(100vh - 4rem)'}>
                     <Grid
@@ -43,7 +64,7 @@ const Layout = () => WrappedComponent => {
                             height: '100%',
                             overflowY: 'auto'
                         }}>
-                        {isLoading ? <Skeleton /> : <ChatList chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler} />}
+                        {isLoading ? <Skeleton /> : <ChatList chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler} newMsgsAlert={newMsgsAlert} />}
                     </Grid>
                     <Grid item xs={12} sm={8} md={5} lg={6} height='100%'>
                         <WrappedComponent {...p} />

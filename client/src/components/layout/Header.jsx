@@ -1,18 +1,24 @@
 import { Add, ExitToApp as LogoutIcon, Group, Menu, Notifications as NotificationIcon, Search as SearchIcon } from '@mui/icons-material'
-import { AppBar, Backdrop, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
+import { AppBar, Backdrop, Badge, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
 import { lazy, Suspense } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { setIsLogout, setIsMobile, setIsNewGrp, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
+import { resetNotificationCount } from '../../redux/reducers/chat'
 const Search = lazy(() => import('../dialog/Search'))
 const Notification = lazy(() => import('../dialog/Notification'))
 const NewGroup = lazy(() => import('../dialog/NewGroup'))
 const Logout = lazy(() => import('../dialog/Logout'))
 
-const Header = () => {
+const Header = ({ unreadChats }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { isMobile, isSearch, isNotification, isNewGrp, isLogout } = useSelector(({ misc }) => misc)
+    const { notificationCount } = useSelector(({ chat }) => chat)
+    const openNotification = () => {
+        dispatch(setIsNotification(true))
+        dispatch(resetNotificationCount())
+    }
     return (
         <>
             <Box className='grow h-16'>
@@ -36,12 +42,17 @@ const Header = () => {
                                 <Menu />
                             </IconButton>
                         </Box>
+                        {unreadChats > 0 && <Box className={`w-[20px] h-[20px] rounded-[50px] bg-red-500 text-white ml-3 flex items-center justify-center`}>
+                            <Typography>
+                                {unreadChats}
+                            </Typography>
+                        </Box>}
                         <Box sx={{ flexGrow: 1 }} />
                         <Box>
                             <Button title='Search User' onClick={() => dispatch(setIsSearch(!isSearch))} icon={<SearchIcon />} />
                             <Button title='Create a Group' onClick={() => dispatch(setIsNewGrp(!isNewGrp))} icon={<Add />} />
                             <Button title='Go to Groups' onClick={() => navigate('/groups')} icon={<Group />} />
-                            <Button title={`Notifications(${0})`} onClick={() => dispatch(setIsNotification(!isNotification))} icon={<NotificationIcon />} />
+                            <Button title={`Notifications(${notificationCount})`} showBadge={true} onClick={openNotification} icon={<NotificationIcon />} count={notificationCount} />
                             <Button title='Logout' onClick={() => dispatch(setIsLogout(!isLogout))} icon={<LogoutIcon />} />
                         </Box>
                     </Toolbar>
@@ -71,11 +82,16 @@ const Header = () => {
     )
 }
 
-const Button = ({ title, icon, onClick }) => {
+const Button = ({ title, icon, onClick, showBadge, count }) => {
     return (
         <Tooltip title={title}>
             <IconButton color='inherit' size='large' onClick={onClick} >
-                {icon}
+                {showBadge ? <Badge badgeContent={count} color="error">
+                    {icon}
+                </Badge>
+                    :
+                    icon
+                }
             </IconButton>
         </Tooltip>
     )

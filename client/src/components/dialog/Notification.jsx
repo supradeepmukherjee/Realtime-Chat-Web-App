@@ -15,9 +15,10 @@ const Notification = () => {
     dispatch(setIsNotification(false))
     try {
       const { data, error } = await acceptRequest({ id, accept })
+      console.log(data)
       if (data.success) {
         //socket
-        toast.success(data.response.msg)
+        toast.success(data?.msg)
       } else
         toast.error(error?.data?.msg)
     } catch (err) {

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import api from './api/api'
 import authSlice from './reducers/auth'
+import chatSlice from './reducers/chat'
 import miscSlice from './reducers/misc'
 
 const store = configureStore({
@@ -8,6 +9,7 @@ const store = configureStore({
         [authSlice.name]: authSlice.reducer,
         [api.reducerPath]: api.reducer,
         [miscSlice.name]: miscSlice.reducer,
+        [chatSlice.name]: chatSlice.reducer,
     },
     middleware: d => d().concat(api.middleware)
 })

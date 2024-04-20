@@ -13,6 +13,7 @@ import { new_msg } from '../constants/events'
 import useErrors from '../hooks/useErrors'
 import useSocketEvents from '../hooks/useSocketEvents'
 import { useChatDetailsQuery, useLazyGetMsgsQuery } from '../redux/api/api'
+import { removeMsgsAlert } from '../redux/reducers/chat'
 import { setIsFileMenu } from '../redux/reducers/misc'
 import { getSocket } from '../socket'
 
@@ -55,6 +56,15 @@ const Chat = () => {
         toast.error('Something went wrong')
       })
   }, [id])
+  useEffect(() => {
+    dispatch(removeMsgsAlert(id))
+    return () => {
+      setMsgs([])
+      setMsg('')
+      setPage(2)
+      setHasMore(true)
+    }
+  }, [dispatch, id])
   const fetch = async () => {
     try {
       const { isError: msgsIsError, error: msgsError, data: msgsData } = await getMsgs({ id, page })

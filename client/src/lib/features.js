@@ -1,6 +1,6 @@
 import moment from "moment"
 
-export const fileFormat = url => {
+const fileFormat = url => {
     const array = url.split('.')
     const extension = array[array.length - 1]
     if (extension === 'mp4' || extension === 'webm' || extension === 'ogg') return 'video'
@@ -9,9 +9,9 @@ export const fileFormat = url => {
     else return 'file'
 }
 
-export const transformImg = (url, width = 100) =>  url.replace('upload/', `upload/dpr_auto/w_${width}/`)
+const transformImg = (url, width = 100) => url.replace('upload/', `upload/dpr_auto/w_${width}/`)
 
-export const getLast7Days = () => {
+const getLast7Days = () => {
     const currentDate = moment()
     let last7Days = []
     for (let i = 0; i < 7; i++) {
@@ -21,3 +21,10 @@ export const getLast7Days = () => {
     }
     return last7Days
 }
+
+const getOrSave_Storage = (get, key, value) => {
+    if (get) return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : null
+    else localStorage.setItem(key, JSON.stringify(value))
+}
+
+export { getOrSave_Storage, fileFormat, getLast7Days, transformImg }
