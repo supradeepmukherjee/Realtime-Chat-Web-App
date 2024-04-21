@@ -3,7 +3,7 @@ import { memo } from "react"
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from "react-redux"
 import useErrors from "../../hooks/useErrors"
-import { useAcceptRequestMutation, useGetNotificationsQuery } from "../../redux/api/api"
+import { useAcceptRequestMutation, useGetNotificationsQuery } from "../../redux/api"
 import { setIsNotification } from "../../redux/reducers/misc"
 
 const Notification = () => {

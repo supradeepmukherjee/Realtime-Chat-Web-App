@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { setIsFileMenu, setUploadingLoader } from "../../redux/reducers/misc"
 import toast from 'react-hot-toast'
-import { useSendAttachmentsMutation } from "../../redux/api/api"
+import { useSendAttachmentsMutation } from "../../redux/api"
 
 const FileMenu = ({ anchorEl, id }) => {
     const { isFileMenu } = useSelector(({ misc }) => misc)

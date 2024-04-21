@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { server } from '../../constants/config'
+import { server } from '../constants/config'
 
 const api = createApi({
     reducerPath: 'api',
@@ -67,8 +67,35 @@ const api = createApi({
                 credentials: 'include'
             }),
         }),
+        myGrps: builder.query({
+            query: () => ({
+                url: '/chat/my-grps',
+                credentials: 'include'
+            }),
+            providesTags: ['Chat']
+        }),
+        myFriends: builder.query({
+            query: id => {
+                let url = `/user/friends`
+                if (id) url += `?id=${id}`
+                return {
+                    url,
+                    credentials: 'include'
+                }
+            },
+        }),
+        newGrp: builder.mutation({
+            query: data => ({
+                url: `/chat/new`,
+                method: `POST`,
+                body: data,
+                credentials: 'include'
+            }),
+            invalidatesTags: ['Chat']
+        }),
+        
     })
 })
 
 export default api
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation } = api
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation,  } = api
