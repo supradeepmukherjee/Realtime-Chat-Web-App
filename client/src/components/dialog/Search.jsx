@@ -18,7 +18,7 @@ const Search = () => {
   useEffect(() => {
     if (search === '') return
     const timeout = setTimeout(() => {
-      searchUser(search)
+      searchUser(({ name: search }))
         .then(({ data }) => setUsers(data.users))
         .catch(err => console.log(err))
     }, 1000);

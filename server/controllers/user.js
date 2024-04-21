@@ -44,20 +44,30 @@ const logOut = tryCatch(async (req, res) => {
 })
 
 const searchUser = tryCatch(async (req, res) => {
-    const { name } = req.query
+    const { name, friend } = req.query
     const chats = await Chat.find({
         grpChat: false,
         members: req.user
     })
     const allUsersOfMyChats = chats.flatMap(c => c.members).filter(m => m !== req.user)
-    const allUsersExceptMeAndFriends = await User.find({
-        _id: { $nin: allUsersOfMyChats },
-        name: {
-            $regex: name,
-            $options: 'i'
-        },
-    })
-    const users = allUsersExceptMeAndFriends.map(({ _id, name, chavi }) => ({
+    let rawUsers
+    if (friend === 1)
+        rawUsers = await User.find({
+            _id: { $in: allUsersOfMyChats },
+            name: {
+                $regex: name,
+                $options: 'i'
+            },
+        })
+    else
+        rawUsers = await User.find({
+            _id: { $nin: allUsersOfMyChats },
+            name: {
+                $regex: name,
+                $options: 'i'
+            },
+        })
+    const users = rawUsers.map(({ _id, name, chavi }) => ({
         _id,
         name,
         chavi: chavi.url,

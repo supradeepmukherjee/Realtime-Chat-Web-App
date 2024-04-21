@@ -14,8 +14,8 @@ const api = createApi({
             providesTags: ['Chat']//this might be causing some error
         }),
         searchUser: builder.query({
-            query: name => ({
-                url: `/user/search?name=${name}`,
+            query: ({ name, friend = 0 }) => ({
+                url: `/user/search?name=${name}&friend=${friend}`,
                 credentials: 'include'
             }),
             providesTags: ['User']
