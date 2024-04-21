@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Drawer, Grid, Skeleton } from '@mui/material'
 import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { new_msg_alert, new_req } from '../../constants/events'
+import { new_msg_alert, new_req, refetch_chats } from '../../constants/events'
 import useErrors from '../../hooks/useErrors'
 import useSocketEvents from '../../hooks/useSocketEvents'
 import { useMyChatsQuery } from '../../redux/api'
@@ -20,9 +21,9 @@ const Layout = () => WrappedComponent => {
     return p => {
         const { id } = useParams()
         const dispatch = useDispatch()
-        const { isAddMember, isMobile, isFileMenu, isDeleteMenu, uploadingLoader, selectedDelChat } = useSelector(({ misc }) => misc)
+        const { isAddMember, isMobile, isDeleteMenu, selectedDelChat } = useSelector(({ misc }) => misc)
         const { newMsgsAlert } = useSelector(({ chat }) => chat)
-        const { isLoading, data, isError, error } = useMyChatsQuery()
+        const { isLoading, data, isError, error, refetch } = useMyChatsQuery()
         const socket = getSocket()
         const deleteChatHandler = async (e, id, grpChat) => {
 
@@ -31,12 +32,16 @@ const Layout = () => WrappedComponent => {
             if (data.id === id) return
             dispatch(setNewMsgsAlert(data.id))
         }, [dispatch, id])
-        const newReqHandler = useCallback(() => {
+        const newReqListener = useCallback(() => {
             dispatch(incrementNotificationCount())
         }, [dispatch])
+        const refetchListener = useCallback(() => {
+            refetch()
+        }, [refetch])
         const eventHandlers = {
             [new_msg_alert]: newMsgAlertHandler,
-            [new_req]: newReqHandler,
+            [new_req]: newReqListener,
+            [refetch_chats]: refetchListener,
         }
         useSocketEvents(socket, eventHandlers)
         useErrors([{ isError, error }])
@@ -49,7 +54,7 @@ const Layout = () => WrappedComponent => {
                 <Header unreadChats={newMsgsAlert.length - 1} />
                 {isLoading ? <Skeleton /> :
                     <Drawer open={isMobile} onClose={() => dispatch(setIsMobile(!isMobile))}>
-                        <ChatList w='70vw' chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler}  newMsgsAlert={newMsgsAlert} />
+                        <ChatList w='70vw' chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler} newMsgsAlert={newMsgsAlert} />
                     </Drawer>}
                 <Grid container height={'calc(100vh - 4rem)'}>
                     <Grid

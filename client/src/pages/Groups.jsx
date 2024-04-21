@@ -2,12 +2,13 @@ import { Add, Delete, Done, Edit, KeyboardBackspace as Back, Menu } from '@mui/i
 import { Backdrop, Box, Button, Drawer, Grid, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material"
 import { lazy, Suspense, useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
+import { Loader } from '../components/layout/Loader'
 import ChaviCard from '../components/shared/ChaviCard'
 import UserItem from '../components/shared/UserItem'
 import { Link } from "../components/Styled"
-import { useChatDetailsQuery, useMyGrpsQuery } from '../redux/api'
 import useErrors from '../hooks/useErrors'
-import { Loader } from '../components/layout/Loader'
+import useMutation from '../hooks/useMutation'
+import { useChatDetailsQuery, useMyGrpsQuery, useRenameGrpMutation } from '../redux/api'
 const DeleteGrp = lazy(() => import('../components/dialog/DeleteGrp'))
 const AddMember = lazy(() => import('../components/dialog/AddMember'))
 
@@ -20,10 +21,11 @@ const Groups = () => {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [addMemberOpen, setAddMemberOpen] = useState(false)
   const { isLoading, data, error, isError } = useMyGrpsQuery()
-  const { isLoading: grpLoading, data: grpData, error: grpError, isError: grpIsError } = useChatDetailsQuery(
+  const { data: grpData, error: grpError, isError: grpIsError } = useChatDetailsQuery(
     { id, populate: 1 },
     { skip: !id }
   )
+  const [renameGrp, renameLoading] = useMutation(useRenameGrpMutation)
   const toggleDelete = () => setDeleteOpen(!deleteOpen)
   const toggleAddMember = () => setAddMemberOpen(!addMemberOpen)
   const deleteHandler = async () => {
@@ -34,6 +36,8 @@ const Groups = () => {
   }
   const updateGrpName = async () => {
     setIsEdit(false)
+    setGrpName(updatedGrpName)
+    renameGrp('Renaming Group', { name: updatedGrpName, id })
   }
   useEffect(() => {
     setGrpName(grpData?.chat.name)
@@ -79,7 +83,7 @@ const Groups = () => {
                     <Typography variant='h4'>
                       {grpName}
                     </Typography>
-                    <IconButton onClick={() => setIsEdit(true)}>
+                    <IconButton disabled={renameLoading} onClick={() => setIsEdit(true)}>
                       <Edit />
                     </IconButton>
                   </>}
