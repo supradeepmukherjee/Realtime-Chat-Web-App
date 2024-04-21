@@ -14,7 +14,7 @@ const ChatList = ({
             {chats.map(({ _id, name, chavi, members, grpChat }, i) => {
                 const newMsgAlert = newMsgsAlert.find(({ id }) => id === _id)
                 const isOnline = members.some(_ => online.includes(_id))
-                return <ChatItem key={i} name={name} chavi={chavi} id={_id} newMsgAlert={newMsgAlert} isOnline={isOnline} grpChat={grpChat} sameSender={id === _id} deleteChatHandler={deleteChatHandler} />
+                return <ChatItem key={i} name={name} chavi={chavi} id={_id} newMsgAlert={newMsgAlert} isOnline={isOnline} grpChat={grpChat} selected={id === _id} deleteChatHandler={deleteChatHandler} />
             })}
         </Stack>
     )

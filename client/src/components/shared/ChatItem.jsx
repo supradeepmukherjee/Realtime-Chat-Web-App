@@ -8,7 +8,7 @@ const ChatItem = ({
     name,
     id,
     grpChat = false,
-    sameSender,
+    selected,
     isOnline,
     newMsgAlert,
     i = 0,
@@ -17,7 +17,7 @@ const ChatItem = ({
     return (
         <Link to={`/chat/${id}`} onContextMenu={e => deleteChatHandler(e, id, grpChat)} sx={{ p: 0 }}>
             <div onContextMenu={e => e.preventDefault()}>
-                <div className={`flex items-center justify- p-4 gap-4 relative ${sameSender ? 'bg-[#000] text-[#fff]' : ''}`}>
+                <div className={`flex items-center p-4 gap-4 relative ${selected ? 'bg-[#000] text-[#fff]' : ''}`}>
                     <ChaviCard chavi={chavi} />
                     <Stack>
                         <Typography>
