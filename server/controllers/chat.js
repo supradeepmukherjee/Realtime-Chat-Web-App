@@ -87,6 +87,7 @@ const removeMember = tryCatch(async (req, res, next) => {
     if (!chat.grpChat) return next(new ErrorHandler(400, 'Not a Group Chat'))
     if (chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler(403, 'You are not allowed to remove Members'))
     if (chat.members.length < 4) return next(new ErrorHandler(400, 'Group must have atleast 3 members'))
+    const origChatMembers = chat.members.map(({ _id }) => _id.toString())
     chat.members = chat.members.filter(m => m.toString() !== userID.toString())
     await chat.save()
     emitEvent(
@@ -95,7 +96,7 @@ const removeMember = tryCatch(async (req, res, next) => {
         chat.members,
         `${user.name} has been removed from the group`
     )
-    emitEvent(req, refetch_chats, chat.members)
+    emitEvent(req, refetch_chats, origChatMembers)
     res.status(200).json({ success: true, msg: 'Removed Successfully' })
 })
 
@@ -209,6 +210,7 @@ const getMsgs = tryCatch(async (req, res, next) => {
     const { page } = req.query
     const chat = await Chat.findById(id)
     if (!chat) return next(new ErrorHandler(404, 'No Messages found as chat doesn\'t exist'))
+    if (!chat.members.includes(req.user.toString())) return next(new ErrorHandler(403, 'You are not allowed to access this chat'))
     const limit = 20
     const [totalMsgs, msgs] = await Promise.all([
         Msg.countDocuments({ chat: id }),

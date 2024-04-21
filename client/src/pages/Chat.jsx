@@ -4,16 +4,16 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import FileMenu from '../components/dialog/FileMenu'
 import Layout from '../components/layout/Layout'
 import { Typing } from '../components/layout/Loader'
 import Msg from '../components/shared/Msg'
 import { InputBox } from '../components/Styled'
-import { new_msg, start_typing, stop_typing } from '../constants/events'
+import { alert as ALERT, new_msg, start_typing, stop_typing } from '../constants/events'
 import useErrors from '../hooks/useErrors'
 import useSocketEvents from '../hooks/useSocketEvents'
-import { useChatDetailsQuery, useLazyGetMsgsQuery } from '../redux/api/api'
+import { useChatDetailsQuery, useLazyGetMsgsQuery } from '../redux/api'
 import { removeMsgsAlert } from '../redux/reducers/chat'
 import { setIsFileMenu } from '../redux/reducers/misc'
 import { getSocket } from '../socket'
@@ -29,12 +29,15 @@ const Chat = () => {
   const typingTimeout = useRef(null)
   const { id } = useParams()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { user } = useSelector(({ auth }) => auth)
+  const { uploadingLoader } = useSelector(({ misc }) => misc)
   const { isLoading, data, error, isError } = useChatDetailsQuery({ id, skip: !id })
   const [getMsgs] = useLazyGetMsgsQuery()
   const socket = getSocket()
   const members = data?.chat?.members
   const fileOpenHandler = async e => {
+    if (uploadingLoader) return
     dispatch(setIsFileMenu(true))
     setAnchorEl(e.target)
   }
@@ -48,7 +51,7 @@ const Chat = () => {
     typingTimeout.current = setTimeout(() => {
       socket.emit(stop_typing, { members, id })
       setIAmTyping(false)
-    }, 1800)
+    }, 1000)
   }
   const submitHandler = async e => {
     e.preventDefault()
@@ -57,8 +60,9 @@ const Chat = () => {
     setMsg('')
   }
   const newMsgsListener = useCallback(data => {
+    if (data.id !== id) return
     setMsgs(prev => [data.msg, ...prev])
-  }, [])
+  }, [id])
   const startTypingListener = useCallback(data => {
     if (data.id !== id) return
     setUserTyping(true)
@@ -67,17 +71,32 @@ const Chat = () => {
     if (data.id !== id) return
     setUserTyping(false)
   }, [id])
+  const alertListener = useCallback(content => {
+    setMsgs(prev => [
+      {
+        content,
+        chat: id,
+        createdAt: new Date().toISOString(),
+        sender: {
+          _id: Math.floor(Math.random() * 999),
+          name: 'Admin'
+        }
+      },
+      ...prev
+    ])
+  }, [id])
   const eventHandler = {
     [new_msg]: newMsgsListener,
     [start_typing]: startTypingListener,
     [stop_typing]: stopTypingListener,
+    [ALERT]: alertListener,
   }
   useSocketEvents(socket, eventHandler)
   useErrors([{ error, isError }])
   useEffect(() => {
     getMsgs({ id, page: 1 })
       .then(({ isError: msgsIsError, error: msgsError, data: msgsData }) => {
-        setMsgs(msgsData.msgs)
+        setMsgs(msgsData?.msgs)
         if (msgsIsError) toast.error(msgsError.data.msg)
       })
       .catch(err => {
@@ -94,6 +113,9 @@ const Chat = () => {
       setHasMore(true)
     }
   }, [dispatch, id])
+  useEffect(() => {
+    if (!data?.chat) navigate('/')
+  }, [data?.chat, navigate])
   const fetch = async () => {
     try {
       const { isError: msgsIsError, error: msgsError, data: msgsData } = await getMsgs({ id, page })
@@ -112,7 +134,7 @@ const Chat = () => {
         <div className='box-border p-4 bg-[#f7f7f7] h-[90%] flex flex-col-reverse overflow-x-hidden overflow-y-auto' id="scrollableDiv">
           <InfiniteScroll
             hasMore={hasMore}
-            dataLength={msgs.length}
+            dataLength={msgs?.length || 0}
             next={fetch}
             inverse={true}
             scrollableTarget="scrollableDiv"
@@ -123,7 +145,7 @@ const Chat = () => {
             }}
           >
             {userTyping && <Typing />}
-            {msgs.map(msg => <Msg key={msg._id ? msg._id : msg.id} msg={msg} user={user} />)}
+            {msgs?.map(msg => <Msg key={msg._id ? msg._id : msg.id} msg={msg} user={user} />)}
           </InfiniteScroll>
         </div>
         <form className="h-[10%]" onSubmit={submitHandler}>

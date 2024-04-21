@@ -2,7 +2,7 @@
 import { Drawer, Grid, Skeleton } from '@mui/material'
 import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { new_msg_alert, new_req, refetch_chats } from '../../constants/events'
 import useErrors from '../../hooks/useErrors'
 import useSocketEvents from '../../hooks/useSocketEvents'
@@ -21,7 +21,8 @@ const Layout = () => WrappedComponent => {
     return p => {
         const { id } = useParams()
         const dispatch = useDispatch()
-        const { isAddMember, isMobile, isDeleteMenu, selectedDelChat } = useSelector(({ misc }) => misc)
+        const navigate = useNavigate()
+        const { isMobile, isDeleteMenu, selectedDelChat } = useSelector(({ misc }) => misc)
         const { newMsgsAlert } = useSelector(({ chat }) => chat)
         const { isLoading, data, isError, error, refetch } = useMyChatsQuery()
         const socket = getSocket()
@@ -37,7 +38,8 @@ const Layout = () => WrappedComponent => {
         }, [dispatch])
         const refetchListener = useCallback(() => {
             refetch()
-        }, [refetch])
+            navigate('/')
+        }, [navigate, refetch])
         const eventHandlers = {
             [new_msg_alert]: newMsgAlertHandler,
             [new_req]: newReqListener,

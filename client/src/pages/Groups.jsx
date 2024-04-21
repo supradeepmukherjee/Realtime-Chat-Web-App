@@ -1,6 +1,7 @@
 import { Add, Delete, Done, Edit, KeyboardBackspace as Back, Menu } from '@mui/icons-material'
 import { Backdrop, Box, Button, Drawer, Grid, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material"
 import { lazy, Suspense, useEffect, useState } from "react"
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Loader } from '../components/layout/Loader'
 import ChaviCard from '../components/shared/ChaviCard'
@@ -9,6 +10,7 @@ import { Link } from "../components/Styled"
 import useErrors from '../hooks/useErrors'
 import useMutation from '../hooks/useMutation'
 import { useChatDetailsQuery, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation } from '../redux/api'
+import { setIsAddMember } from '../redux/reducers/misc'
 const DeleteGrp = lazy(() => import('../components/dialog/DeleteGrp'))
 const AddMember = lazy(() => import('../components/dialog/AddMember'))
 
@@ -19,7 +21,8 @@ const Groups = () => {
   const [grpName, setGrpName] = useState('')
   const [updatedGrpName, setUpdatedGrpName] = useState('')
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [addMemberOpen, setAddMemberOpen] = useState(false)
+  const { isAddMember } = useSelector(({ misc }) => misc)
+  const dispatch = useDispatch()
   const { isLoading, data, error, isError } = useMyGrpsQuery()
   const { data: grpData, error: grpError, isError: grpIsError } = useChatDetailsQuery(
     { id, populate: 1 },
@@ -28,7 +31,7 @@ const Groups = () => {
   const [renameGrp, renameLoading] = useMutation(useRenameGrpMutation)
   const [removeMember, removeLoading] = useMutation(useRemoveMemberMutation)
   const toggleDelete = () => setDeleteOpen(!deleteOpen)
-  const toggleAddMember = () => setAddMemberOpen(!addMemberOpen)
+  const toggleAddMember = () => dispatch(setIsAddMember(!isAddMember))
   const deleteHandler = async () => {
 
   }
@@ -131,9 +134,9 @@ const Groups = () => {
               </Stack>
             </>}
         </Grid>
-        {addMemberOpen &&
+        {isAddMember &&
           <Suspense fallback={<Backdrop open />}>
-            <AddMember open={deleteOpen} closeHandler={toggleAddMember} deleteHandler={deleteHandler} />
+            <AddMember open={isAddMember} closeHandler={toggleAddMember} id={id} />
           </Suspense>}
         {deleteOpen &&
           <Suspense fallback={<Backdrop open />}>

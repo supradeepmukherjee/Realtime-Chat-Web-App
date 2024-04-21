@@ -11,12 +11,12 @@ const errorMiddleware = async (err, req, res, next) => {
         err.message = `Invalid format of ${err.path}`
         err.status = 400
     }
-    return res
-        .status(err.status)
-        .json({
-            success: false,
-            msg: envMode === 'DEVELOPMENT' ? err : err.message,
-        })
+    const response = {
+        success: false,
+        msg: err.message
+    }
+    if (envMode === 'DEVELOPMENT') response.error = err
+    return res.status(err.status).json(response)
 }
 
 const tryCatch = f => async (req, res, next) => {

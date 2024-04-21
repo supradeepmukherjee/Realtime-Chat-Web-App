@@ -44,30 +44,20 @@ const logOut = tryCatch(async (req, res) => {
 })
 
 const searchUser = tryCatch(async (req, res) => {
-    const { name, friend } = req.query
+    const { name } = req.query
     const chats = await Chat.find({
         grpChat: false,
         members: req.user
     })
     const allUsersOfMyChats = chats.flatMap(c => c.members).filter(m => m !== req.user)
-    let rawUsers
-    if (friend === 1)
-        rawUsers = await User.find({
-            _id: { $in: allUsersOfMyChats },
-            name: {
-                $regex: name,
-                $options: 'i'
-            },
-        })
-    else
-        rawUsers = await User.find({
-            _id: { $nin: allUsersOfMyChats },
-            name: {
-                $regex: name,
-                $options: 'i'
-            },
-        })
-    const users = rawUsers.map(({ _id, name, chavi }) => ({
+    const allUsersExceptMeAndFriends = await User.find({
+        _id: { $nin: allUsersOfMyChats },
+        name: {
+            $regex: name,
+            $options: 'i'
+        },
+    })
+    const users = allUsersExceptMeAndFriends.map(({ _id, name, chavi }) => ({
         _id,
         name,
         chavi: chavi.url,
@@ -138,7 +128,7 @@ const getRequests = tryCatch(async (req, res) => {
 })
 
 const getFriends = tryCatch(async (req, res) => {
-    const { id } = req.query
+    const { id, name } = req.query
     const chats = await Chat.find({
         members: req.user,
         grpChat: false
@@ -153,9 +143,26 @@ const getFriends = tryCatch(async (req, res) => {
         }
     })
     if (id) {
+        console.log('working')
         const chat = await Chat.findById(id)
         const availableFriends = friends.filter(({ _id }) => !chat.members.includes(_id))
-        res.status(200).json({ success: true, friends: availableFriends })
+        const allUsers = await User.find({
+            name: {
+                $regex: name,
+                $options: 'i'
+            },
+        })
+        let matchingFriends = []
+        for (let i = 0; i < availableFriends.length; i++) {
+            const friend = availableFriends[i];
+            for (let j = 0; j < allUsers.length; j++) {
+                const user = allUsers[j];
+                if (friend._id.toString() === user._id.toString()) {
+                    matchingFriends.push(friend)
+                }
+            }
+        }
+        res.status(200).json({ success: true, friends: matchingFriends })
     } else {
         res.status(200).json({ success: true, friends })
     }

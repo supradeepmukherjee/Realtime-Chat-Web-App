@@ -75,9 +75,9 @@ const api = createApi({
             providesTags: ['Chat']
         }),
         myFriends: builder.query({
-            query: id => {
+            query: ({ name, id }) => {
                 let url = `/user/friends`
-                if (id) url += `?id=${id}`
+                if (id) url += `?id=${id}&name=${name}`
                 return {
                     url,
                     credentials: 'include'
@@ -111,8 +111,17 @@ const api = createApi({
             }),
             invalidatesTags: ['Chat']
         }),
+        addMembers: builder.mutation({
+            query: data => ({
+                url: `/chat/add-members`,
+                method: `PUT`,
+                body: data,
+                credentials: 'include'
+            }),
+            invalidatesTags: ['Chat']
+        }),
     })
 })
 
 export default api
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation } = api
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery } = api

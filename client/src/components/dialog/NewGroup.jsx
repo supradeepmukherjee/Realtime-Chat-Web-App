@@ -12,7 +12,7 @@ const NewGroup = () => {
   const [members, setMembers] = useState([])
   const dispatch = useDispatch()
   const { isNewGrp } = useSelector(({ misc }) => misc)
-  const { isLoading, data, error, isError } = useMyFriendsQuery()
+  const { isLoading, data, error, isError } = useMyFriendsQuery({})
   const selectMember = id => {
     setMembers(m =>
       m.includes(id) ?
