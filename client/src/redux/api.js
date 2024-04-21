@@ -102,8 +102,17 @@ const api = createApi({
             }),
             invalidatesTags: ['Chat']
         }),
+        removeMember: builder.mutation({
+            query: data => ({
+                url: `/chat/remove-member`,
+                method: `PUT`,
+                body: data,
+                credentials: 'include'
+            }),
+            invalidatesTags: ['Chat']
+        }),
     })
 })
 
 export default api
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation } = api
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation } = api

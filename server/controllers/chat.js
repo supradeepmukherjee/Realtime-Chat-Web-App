@@ -43,7 +43,10 @@ const getMyChats = tryCatch(async (req, res, next) => {
 })
 
 const getMyGrps = tryCatch(async (req, res, next) => {
-    const chats = await Chat.find({ creator: req.user }).populate('members', 'name chavi')
+    const chats = await Chat.find({
+        members: req.user,
+        grpChat: true
+    }).populate('members', 'name chavi')
     const grps = chats.map(({ members, _id, grpChat, name }) => ({
         _id,
         grpChat,

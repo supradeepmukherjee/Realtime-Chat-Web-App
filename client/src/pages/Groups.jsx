@@ -8,7 +8,7 @@ import UserItem from '../components/shared/UserItem'
 import { Link } from "../components/Styled"
 import useErrors from '../hooks/useErrors'
 import useMutation from '../hooks/useMutation'
-import { useChatDetailsQuery, useMyGrpsQuery, useRenameGrpMutation } from '../redux/api'
+import { useChatDetailsQuery, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation } from '../redux/api'
 const DeleteGrp = lazy(() => import('../components/dialog/DeleteGrp'))
 const AddMember = lazy(() => import('../components/dialog/AddMember'))
 
@@ -26,13 +26,14 @@ const Groups = () => {
     { skip: !id }
   )
   const [renameGrp, renameLoading] = useMutation(useRenameGrpMutation)
+  const [removeMember, removeLoading] = useMutation(useRemoveMemberMutation)
   const toggleDelete = () => setDeleteOpen(!deleteOpen)
   const toggleAddMember = () => setAddMemberOpen(!addMemberOpen)
   const deleteHandler = async () => {
 
   }
-  const removeHandler = async id => {
-
+  const removeHandler = async userID => {
+    removeMember('Removing Member', { chatID: id, userID })
   }
   const updateGrpName = async () => {
     setIsEdit(false)
@@ -100,7 +101,8 @@ const Groups = () => {
                   key={member._id}
                   user={member}
                   isSelected={true}
-                  handler={removeHandler}
+                  handler={() => removeHandler(member._id)}
+                  loading={removeLoading}
                   style={{
                     boxShadow: '0 0 .5rem rgba(0,0,0,.2)',
                     padding: '1rem 2rem',
