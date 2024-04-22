@@ -183,9 +183,9 @@ const delGroup = tryCatch(async (req, res, next) => {
     const { id } = req.params
     const chat = await Chat.findById(id)
     if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
-    if (chat.grpChat && chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler(403, 'You are not allowed to delete this group'))
+    if (chat.grpChat && (chat.creator.toString() !== req.user)) return next(new ErrorHandler(403, 'You are not allowed to delete this group'))
     if (!chat.grpChat && !chat.members.includes(req.user.toString())) return next(new ErrorHandler(403, 'You are not allowed to delete this chat'))
-    const msgsWithAttachments = await Msg.findById({
+    const msgsWithAttachments = await Msg.find({
         chat: id,
         attachments: {
             $exists: true,
@@ -198,10 +198,10 @@ const delGroup = tryCatch(async (req, res, next) => {
     })
     await Promise.all([
         delCloudinaryFiles(publicIDs),
-        // delete one chat,
-        // del many msgs using chat id
+        Chat.deleteOne(chat),
+        Msg.deleteMany({ chat: id })
     ])
-    // emitEvent(req,refetch_chats,members)
+    emitEvent(req, refetch_chats, chat.members)
     res.status(200).json({ success: true, msg: 'Chat Deleted Successfully' })
 })
 

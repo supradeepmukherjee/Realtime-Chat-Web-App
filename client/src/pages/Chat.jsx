@@ -114,8 +114,8 @@ const Chat = () => {
     }
   }, [dispatch, id])
   useEffect(() => {
-    if (!data?.chat) navigate('/')
-  }, [data?.chat, navigate])
+    if (data && !data?.chat) navigate('/')
+  }, [data, navigate])
   const fetch = async () => {
     try {
       const { isError: msgsIsError, error: msgsError, data: msgsData } = await getMsgs({ id, page })

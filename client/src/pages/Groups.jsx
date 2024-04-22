@@ -9,8 +9,8 @@ import UserItem from '../components/shared/UserItem'
 import { Link } from "../components/Styled"
 import useErrors from '../hooks/useErrors'
 import useMutation from '../hooks/useMutation'
-import { useChatDetailsQuery, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation } from '../redux/api'
-import { setIsAddMember } from '../redux/reducers/misc'
+import { useChatDetailsQuery, useDelChatMutation, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation } from '../redux/api'
+import { setIsAddMember, setIsDelGrp } from '../redux/reducers/misc'
 const DeleteGrp = lazy(() => import('../components/dialog/DeleteGrp'))
 const AddMember = lazy(() => import('../components/dialog/AddMember'))
 
@@ -19,10 +19,11 @@ const Groups = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
   const [grpName, setGrpName] = useState('')
+  const [members, setMembers] = useState([])
   const [updatedGrpName, setUpdatedGrpName] = useState('')
-  const [deleteOpen, setDeleteOpen] = useState(false)
-  const { isAddMember } = useSelector(({ misc }) => misc)
+  const { isAddMember, isDelGrp } = useSelector(({ misc }) => misc)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { isLoading, data, error, isError } = useMyGrpsQuery()
   const { data: grpData, error: grpError, isError: grpIsError } = useChatDetailsQuery(
     { id, populate: 1 },
@@ -30,25 +31,42 @@ const Groups = () => {
   )
   const [renameGrp, renameLoading] = useMutation(useRenameGrpMutation)
   const [removeMember, removeLoading] = useMutation(useRemoveMemberMutation)
-  const toggleDelete = () => setDeleteOpen(!deleteOpen)
+  const [delGrp, delLoading] = useMutation(useDelChatMutation)
+  const toggleDelete = () => dispatch(setIsDelGrp(!isDelGrp))
   const toggleAddMember = () => dispatch(setIsAddMember(!isAddMember))
   const deleteHandler = async () => {
-
+    navigate('/groups')
+    dispatch(setIsDelGrp(false))
+    delGrp('Deleting Group', id)
   }
-  const removeHandler = async userID => {
-    removeMember('Removing Member', { chatID: id, userID })
-  }
+  const removeHandler = userID => removeMember('Removing Member', { chatID: id, userID })
   const updateGrpName = async () => {
     setIsEdit(false)
     setGrpName(updatedGrpName)
     renameGrp('Renaming Group', { name: updatedGrpName, id })
   }
   useEffect(() => {
-    setGrpName(grpData?.chat.name)
+    if (id) {
+      setGrpName(``)
+      setUpdatedGrpName(``)
+    }
     return () => {
+      setGrpName("")
+      setUpdatedGrpName("")
       setIsEdit(false)
     }
-  }, [grpData?.chat])
+  }, [id])
+  useEffect(() => {
+    setGrpName(grpData?.chat?.name)
+    setUpdatedGrpName(grpData?.chat?.name)
+    setMembers(grpData?.chat?.members)
+    return () => {
+      setIsEdit(false)
+      setGrpName('')
+      setUpdatedGrpName('')
+      setMembers([])
+    }
+  }, [grpData?.chat?.members, grpData?.chat?.name])
   useErrors([
     { error, isError },
     { grpError, grpIsError },
@@ -72,7 +90,7 @@ const Groups = () => {
         </Grid>
         <Grid item xs={12} sm={8} className='flex items-center !flex-col relative py-4 px-12'>
           <IconBtns setMenuOpen={setMenuOpen} />
-          {grpData &&
+          {grpName &&
             <>
               <Stack direction='row' className='items-center justify-center gap-4 p-12'>
                 {isEdit ?
@@ -100,7 +118,7 @@ const Groups = () => {
                   md: '1rem 4rem'
                 }}
               >
-                {grpData?.chat.members.map(member => <UserItem
+                {members.map(member => <UserItem
                   key={member._id}
                   user={member}
                   isSelected={true}
@@ -138,9 +156,9 @@ const Groups = () => {
           <Suspense fallback={<Backdrop open />}>
             <AddMember open={isAddMember} closeHandler={toggleAddMember} id={id} />
           </Suspense>}
-        {deleteOpen &&
+        {isDelGrp &&
           <Suspense fallback={<Backdrop open />}>
-            <DeleteGrp open={deleteOpen} closeHandler={toggleDelete} deleteHandler={deleteHandler} />
+            <DeleteGrp open={isDelGrp} closeHandler={toggleDelete} deleteHandler={deleteHandler} />
           </Suspense>}
         <Drawer
           open={menuOpen}
