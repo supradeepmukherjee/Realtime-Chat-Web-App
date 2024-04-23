@@ -55,6 +55,7 @@ const uploadToCloudinary = async files => {
         }))
         return results
     } catch (err) {
+        console.log(err)
         throw new Error('Error uploading files to cloudinary', err)
     }
 }

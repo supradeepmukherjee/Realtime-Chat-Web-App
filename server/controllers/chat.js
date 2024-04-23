@@ -130,7 +130,12 @@ const sendAttachments = tryCatch(async (req, res, next) => {
     if (files.length > 5) return next(new ErrorHandler(400, 'Max. 5 files can be sent at a time'))
     const [chat, user] = await Promise.all([Chat.findById(id), User.findById(req.user)])
     if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
-    const attachments = await uploadToCloudinary(files)
+    let nonEmptyFiles = []
+    files.forEach(f => {
+        if (f.size > 0) nonEmptyFiles.push(f)
+    })
+    if (nonEmptyFiles.length < 1) return res.status(400).json({ success: false, msg:'Empty files cannot be sent' })
+    const attachments = await uploadToCloudinary(nonEmptyFiles)
     const dbMsg = {
         attachments,
         sender: req.user,
