@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Drawer, Grid, Skeleton } from '@mui/material'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { new_msg_alert, new_req, refetch_chats } from '../../constants/events'
 import useErrors from '../../hooks/useErrors'
 import useSocketEvents from '../../hooks/useSocketEvents'
 import { useMyChatsQuery } from '../../redux/api'
-import { setIsMobile } from '../../redux/reducers/misc'
+import { setIsDeleteMenu, setIsMobile, setSelectedDelChat } from '../../redux/reducers/misc'
 import { incrementNotificationCount, setNewMsgsAlert } from '../../redux/reducers/chat'
 import { getSocket } from '../../socket'
 import ChatList from '../ChatList'
@@ -15,6 +15,7 @@ import Profile from '../shared/Profile'
 import Title from '../shared/Title'
 import Header from './Header'
 import { getOrSave_Storage } from '../../lib/features'
+import DelChatMenu from '../dialog/DelChatMenu'
 
 const Layout = () => WrappedComponent => {
     // eslint-disable-next-line react/display-name
@@ -22,13 +23,17 @@ const Layout = () => WrappedComponent => {
         const { id } = useParams()
         const dispatch = useDispatch()
         const navigate = useNavigate()
+        const anchorEl = useRef(null)
         const { isMobile, isDeleteMenu, selectedDelChat } = useSelector(({ misc }) => misc)
         const { newMsgsAlert } = useSelector(({ chat }) => chat)
         const { isLoading, data, isError, error, refetch } = useMyChatsQuery()
         const socket = getSocket()
         const deleteChatHandler = async (e, id, grpChat) => {
-
+            anchorEl.current = e.currentTarget
+            dispatch(setIsDeleteMenu(true))
+            dispatch(setSelectedDelChat({ id, grpChat }))
         }
+        const closeDelChatMenu = () => dispatch(setIsDeleteMenu(false))
         const newMsgAlertHandler = useCallback(data => {
             if (data.id === id) return
             dispatch(setNewMsgsAlert(data.id))
@@ -92,6 +97,7 @@ const Layout = () => WrappedComponent => {
                         <Profile />
                     </Grid>
                 </Grid>
+                <DelChatMenu open={isDeleteMenu} closeHandler={closeDelChatMenu} anchorEl={anchorEl.current} selectedDelChat={selectedDelChat} />
             </>)
     }
 }

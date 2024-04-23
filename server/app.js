@@ -83,11 +83,9 @@ io.on('connection', socket => {
         }
     })
     socket.on(start_typing, ({ members, id }) => {
-        console.log('type', members, id)
         socket.to(getSockets(members)).emit(start_typing, { id })
     })
     socket.on(stop_typing, ({ members, id }) => {
-        console.log('type', members, id)
         socket.to(getSockets(members)).emit(stop_typing, { id })
     })
     socket.on('disconnect', () => {
