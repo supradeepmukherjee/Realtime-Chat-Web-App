@@ -2,6 +2,7 @@ import { Box, Stack, Typography } from "@mui/material"
 import { memo } from "react"
 import { Link } from "../Styled"
 import ChaviCard from "./ChaviCard"
+import { motion } from 'framer-motion'
 
 const ChatItem = ({
     chavi = [],
@@ -16,7 +17,18 @@ const ChatItem = ({
 }) => {
     return (
         <Link to={`/chat/${id}`} onContextMenu={e => deleteChatHandler(e, id, grpChat)} sx={{ p: 0 }}>
-            <div onContextMenu={e => e.preventDefault()}>
+            <motion.div
+                initial={{
+                    opacity: 0,
+                    y: '-100%'
+                }}
+                animate={{
+                    opacity: 1,
+                    y: '0'
+                }}
+                transition={{ delay: i * .15 }}
+                onContextMenu={e => e.preventDefault()}
+            >
                 <div className={`flex items-center p-4 gap-4 relative ${selected ? 'bg-[#000] text-[#fff]' : ''}`}>
                     <ChaviCard chavi={chavi} />
                     <Stack>
@@ -31,7 +43,7 @@ const ChatItem = ({
                             </Typography>}
                     </Box>}
                 </div>
-            </div>
+            </motion.div>
         </Link>
     )
 }

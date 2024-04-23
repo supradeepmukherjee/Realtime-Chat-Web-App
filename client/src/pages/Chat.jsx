@@ -114,8 +114,8 @@ const Chat = () => {
     }
   }, [dispatch, id])
   useEffect(() => {
-    if (data && !data?.chat) navigate('/')
-  }, [data, navigate])
+    if (isError) navigate('/')
+  }, [isError, navigate])
   const fetch = async () => {
     try {
       const { isError: msgsIsError, error: msgsError, data: msgsData } = await getMsgs({ id, page })
@@ -141,7 +141,8 @@ const Chat = () => {
             style={{
               display: 'flex',
               flexDirection: 'column-reverse',
-              gap: '1rem'
+              gap: '1rem',
+              overflowX: 'hidden'
             }}
           >
             {userTyping && <Typing />}
