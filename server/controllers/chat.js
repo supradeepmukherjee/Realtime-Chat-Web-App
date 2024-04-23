@@ -16,7 +16,7 @@ const newGrpChat = tryCatch(async (req, res, next) => {
         members: allMembers,
         creator: req.user
     })
-    emitEvent(req, alert, allMembers, `Welcome to ${name} Group`)
+    emitEvent(req, alert, members, `Welcome to ${name} Group`)
     emitEvent(req, refetch_chats, members)
     res.status(201).json({ success: true, msg: 'Group Created', chat })
 })

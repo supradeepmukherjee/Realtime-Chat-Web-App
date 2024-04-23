@@ -1,5 +1,6 @@
 import { Button, Dialog, DialogTitle, Skeleton, Stack, TextField } from "@mui/material"
 import { useState } from "react"
+import toast from "react-hot-toast"
 import { useDispatch, useSelector } from "react-redux"
 import useErrors from "../../hooks/useErrors"
 import useMutation from "../../hooks/useMutation"
@@ -23,6 +24,8 @@ const NewGroup = () => {
   }
   const [createGrp] = useMutation(useNewGrpMutation)
   const createHandler = async () => {
+    if (members.length < 2) return toast.error('A group must have atleast 3 members')
+    if (name === '') return toast.error('Group name can\'t be empty')
     createGrp('Creating Group...', { name, members })
     dispatch(setIsNewGrp(false))
   }

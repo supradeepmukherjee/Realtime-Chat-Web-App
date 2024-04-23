@@ -3,22 +3,25 @@ import { Menu, Stack, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useMutation from '../../hooks/useMutation'
-import { useDelChatMutation } from '../../redux/api'
+import { useDelChatMutation, useLeaveGrpMutation } from '../../redux/api'
 
 const DelChatMenu = ({ open, closeHandler, anchorEl, selectedDelChat }) => {
     const navigate = useNavigate()
+    const { id } = selectedDelChat
     const isGrp = selectedDelChat.grpChat
     const [delChatMutation, _, delChatData] = useMutation(useDelChatMutation)
+    const [leaveGrpMutation, __, leaveGrpData] = useMutation(useLeaveGrpMutation)
     const leaveGrp = () => {
-
+        closeHandler()
+        leaveGrpMutation('Leaving Group', id)
     }
     const delChat = () => {
         closeHandler()
-        delChatMutation('Deleting Chat', selectedDelChat.id)
+        delChatMutation('Deleting Chat', id)
     }
     useEffect(() => {
-        if (delChatData) navigate('/')
-    }, [delChatData, navigate])
+        if (delChatData || leaveGrpData) navigate('/')
+    }, [delChatData, leaveGrpData, navigate])
     return (
         <Menu
             open={open}
