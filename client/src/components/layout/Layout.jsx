@@ -3,20 +3,19 @@ import { Drawer, Grid, Skeleton } from '@mui/material'
 import { useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
-import { new_msg_alert, new_req, refetch_chats, alert as ALERT } from '../../constants/events'
+import { new_msg_alert, new_req, refetch_chats } from '../../constants/events'
 import useErrors from '../../hooks/useErrors'
 import useSocketEvents from '../../hooks/useSocketEvents'
+import { getOrSave_Storage } from '../../lib/features'
 import { useMyChatsQuery } from '../../redux/api'
-import { setIsDeleteMenu, setIsMobile, setSelectedDelChat } from '../../redux/reducers/misc'
 import { incrementNotificationCount, setNewMsgsAlert } from '../../redux/reducers/chat'
+import { setIsDeleteMenu, setIsMobile, setSelectedDelChat } from '../../redux/reducers/misc'
 import { getSocket } from '../../socket'
 import ChatList from '../ChatList'
+import DelChatMenu from '../dialog/DelChatMenu'
 import Profile from '../shared/Profile'
 import Title from '../shared/Title'
 import Header from './Header'
-import { getOrSave_Storage } from '../../lib/features'
-import DelChatMenu from '../dialog/DelChatMenu'
-import toast from 'react-hot-toast'
 
 const Layout = () => WrappedComponent => {
     // eslint-disable-next-line react/display-name
@@ -46,14 +45,10 @@ const Layout = () => WrappedComponent => {
             refetch()
             navigate('/')
         }, [navigate, refetch])
-        const alertListener = useCallback(content => {
-            toast.success(content)
-        }, [])
         const eventHandlers = {
             [new_msg_alert]: newMsgAlertHandler,
             [new_req]: newReqListener,
             [refetch_chats]: refetchListener,
-            [ALERT]: alertListener,
         }
         useSocketEvents(socket, eventHandlers)
         useErrors([{ isError, error }])

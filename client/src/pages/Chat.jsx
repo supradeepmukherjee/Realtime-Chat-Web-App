@@ -71,19 +71,20 @@ const Chat = () => {
     if (data.id !== id) return
     setUserTyping(false)
   }, [id])
-  const alertListener = useCallback(content => {
-    setMsgs(prev => [
-      {
-        content,
-        chat: id,
-        createdAt: new Date().toISOString(),
-        sender: {
-          _id: Math.floor(Math.random() * 999),
-          name: 'Admin'
-        }
-      },
-      ...prev
-    ])
+  const alertListener = useCallback(({ msg, chatID }) => {
+    if (chatID === id)
+      setMsgs(prev => [
+        {
+          content: msg,
+          chat: chatID,
+          createdAt: new Date().toISOString(),
+          sender: {
+            _id: Math.floor(Math.random() * 999),
+            name: 'Admin'
+          }
+        },
+        ...prev
+      ])
   }, [id])
   const eventHandler = {
     [new_msg]: newMsgsListener,

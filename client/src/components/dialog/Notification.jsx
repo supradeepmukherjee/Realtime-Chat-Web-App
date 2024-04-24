@@ -1,8 +1,8 @@
 import { Avatar as Chavi, Button, Dialog, DialogTitle, ListItem, Skeleton, Stack, Typography } from "@mui/material"
 import { memo } from "react"
-import toast from "react-hot-toast"
 import { useDispatch, useSelector } from "react-redux"
 import useErrors from "../../hooks/useErrors"
+import useMutation from "../../hooks/useMutation"
 import { useAcceptRequestMutation, useGetNotificationsQuery } from "../../redux/api"
 import { setIsNotification } from "../../redux/reducers/misc"
 
@@ -10,21 +10,10 @@ const Notification = () => {
   const { isLoading, data, error, isError } = useGetNotificationsQuery()
   const { isNotification } = useSelector(({ misc }) => misc)
   const dispatch = useDispatch()
-  const [acceptRequest] = useAcceptRequestMutation()
+  const [acceptRequest] = useMutation(useAcceptRequestMutation)
   const friendHandler = async (id, accept) => {
     dispatch(setIsNotification(false))
-    try {
-      const { data, error } = await acceptRequest({ id, accept })
-      console.log(data)
-      if (data.success) {
-        //socket
-        toast.success(data?.msg)
-      } else
-        toast.error(error?.data?.msg)
-    } catch (err) {
-      console.log(err)
-      toast.error('Something went wrong')
-    }
+    acceptRequest('Please wait...', { id, accept })
   }
   useErrors([{ error, isError }])
   return (

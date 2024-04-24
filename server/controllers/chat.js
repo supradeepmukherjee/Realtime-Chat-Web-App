@@ -94,7 +94,10 @@ const removeMember = tryCatch(async (req, res, next) => {
         req,
         alert,
         chat.members,
-        `${user.name} has been removed from the group`
+        {
+            msg: `${user.name} has been removed from the group`,
+            chatID
+        }
     )
     emitEvent(req, refetch_chats, origChatMembers)
     res.status(200).json({ success: true, msg: 'Removed Successfully' })
@@ -118,7 +121,10 @@ const leaveGroup = tryCatch(async (req, res, next) => {
         req,
         alert,
         chat.members,
-        `${user.name} has left the group`
+        {
+            msg: `${user.name} has left the group`,
+            chatID: id
+        }
     )
     res.status(200).json({ success: true, msg: 'Left Group' })
 })
@@ -134,7 +140,7 @@ const sendAttachments = tryCatch(async (req, res, next) => {
     files.forEach(f => {
         if (f.size > 0) nonEmptyFiles.push(f)
     })
-    if (nonEmptyFiles.length < 1) return res.status(400).json({ success: false, msg:'Empty files cannot be sent' })
+    if (nonEmptyFiles.length < 1) return res.status(400).json({ success: false, msg: 'Empty files cannot be sent' })
     const attachments = await uploadToCloudinary(nonEmptyFiles)
     const dbMsg = {
         attachments,
