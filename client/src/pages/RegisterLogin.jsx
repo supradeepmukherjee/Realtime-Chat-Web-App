@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react'
-import { Avatar as Chavi, Button, Container, IconButton, Paper, Stack, TextField, Typography } from '@mui/material'
 import Camera from '@mui/icons-material/CameraAlt'
-import { HiddenInput } from '../components/Styled'
-import { uNameValidator, passwordValidator } from '../utils/validators'
+import { Avatar as Chavi, Button, Container, IconButton, Paper, Stack, TextField, Typography } from '@mui/material'
 import axios from 'axios'
-import { server } from '../constants/config'
-import { useDispatch, useSelector } from 'react-redux'
-import { userExists } from '../redux/reducers/auth'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useNavigate, redirect } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { redirect, useNavigate } from 'react-router-dom'
+import { HiddenInput } from '../components/Styled'
+import { server } from '../constants/config'
+import { userExists } from '../redux/reducers/auth'
+import { nameValidator, passwordValidator, uNameValidator } from '../utils/validators'
 
 const RegisterLogin = () => {
   const { user } = useSelector(state => state.auth)
@@ -39,32 +39,12 @@ const RegisterLogin = () => {
   }
   const loginCredentialsChangeHandler = e => setLoginCredentials({ ...loginCredentials, [e.target.name]: e.target.value })
   const userDetailsChangeHandler = e => setUserDetails({ ...userDetails, [e.target.name]: e.target.value })
-  const loginHandler = async e => {
-    e.preventDefault()
-    setLoading(true)
-    try {
-      const { data } = await axios.put(`${server}/user/login`,
-        {
-          uName: loginCredentials.uName,
-          password: loginCredentials.password,
-        },
-        {
-          withCredentials: true,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      )
-      dispatch(userExists(data.user))
-      toast.success(data.msg)
-      redirect('/')
-    } catch (err) {
-      console.log(err)
-      toast.error(err?.response?.data?.msg || 'Something went wrong')
-    } finally {
-      setLoading(false)
-    }
-  }
   const registerHandler = async e => {
     e.preventDefault()
+    const id = toast.loading('Registering...')
+    let validationMsg = ''
+    validationMsg = nameValidator(userDetails.name) || uNameValidator(userDetails.uName) || passwordValidator(userDetails.password) || ''
+    if (validationMsg !== '') return toast.error(validationMsg, { id })
     setLoading(true)
     const formData = new FormData()
     formData.append('chavi', chaviFile)
@@ -81,18 +61,54 @@ const RegisterLogin = () => {
         }
       )
       dispatch(userExists(data.user))
-      toast.success(data.msg)
+      toast.success(data.msg, { id })
       redirect('/')
     } catch (err) {
       console.log(err)
-      toast.error(err?.response?.data?.msg || 'Something went wrong')
+      toast.error(err?.response?.data?.msg || 'Something went wrong', { id })
+    } finally {
+      setLoading(false)
+    }
+  }
+  const loginHandler = async e => {
+    e.preventDefault()
+    const id = toast.loading('Logging In...')
+    setLoading(true)
+    try {
+      const { data } = await axios.put(`${server}/user/login`,
+        loginCredentials,
+        {
+          withCredentials: true,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+      dispatch(userExists(data.user))
+      toast.success(data.msg, { id })
+      redirect('/')
+    } catch (err) {
+      console.log(err)
+      toast.error(err?.response?.data?.msg || 'Something went wrong', { id })
     } finally {
       setLoading(false)
     }
   }
   useEffect(() => {
     if (user) return navigate('/')
-  }, [navigate, user])
+    return () => {
+      setUserDetails({
+        name: '',
+        password: '',
+        about: '',
+        uName: ''
+      })
+      setLoginCredentials({
+        uName: '',
+        password: ''
+      })
+      setChaviFile(null)
+      setChavi(null)
+    }
+  }, [navigate, user, login])
   return (
     <Container maxWidth='xs' className='h-screen !flex justify-center items-center' component='main'>
       <Paper
@@ -118,7 +134,7 @@ const RegisterLogin = () => {
                 </Button>
               </div>
               <div className="flex justify-center">
-                <Button variant='outlined' onClick={() => setLogin(false)}>
+                <Button variant='outlined' onClick={() => setLogin(false)} disabled={loading}>
                   Don&apos;t have an account?
                 </Button>
               </div>
@@ -149,7 +165,7 @@ const RegisterLogin = () => {
                 </Button>
               </div>
               <div className="flex justify-center">
-                <Button variant='outlined' onClick={() => setLogin(true)}>
+                <Button variant='outlined' onClick={() => setLogin(true)} disabled={loading}>
                   Already Registered?
                 </Button>
               </div>
