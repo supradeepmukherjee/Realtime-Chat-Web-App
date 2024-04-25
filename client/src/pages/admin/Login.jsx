@@ -1,14 +1,22 @@
 import { Button, Container, Paper, TextField, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { adminLogin, checkAdmin } from '../../redux/thunks/admin'
 
 const Login = () => {
   const [key, setKey] = useState('')
-  const [admin, setAdmin] = useState(true)
+  const { isAdmin } = useSelector(({ auth }) => auth)
+  const dispatch = useDispatch()
   const loginHandler = async e => {
     e.preventDefault()
+    if (key === '') return
+    dispatch(adminLogin(key))
   }
-  if (admin) return <Navigate to='/admin/dashboard' />
+  useEffect(() => {
+    dispatch(checkAdmin())
+  }, [dispatch])
+  if (isAdmin) return <Navigate to='/admin/dashboard' />
   return (
     <Container maxWidth='xs' className='h-screen !flex justify-center items-center' component='main'>
       <Paper
