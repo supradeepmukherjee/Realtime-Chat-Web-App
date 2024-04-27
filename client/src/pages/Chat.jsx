@@ -1,5 +1,5 @@
 import { AttachFile, Send } from '@mui/icons-material'
-import { IconButton, Skeleton, Stack } from '@mui/material'
+import { AppBar, IconButton, Skeleton, Stack } from '@mui/material'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import InfiniteScroll from 'react-infinite-scroll-component'
@@ -10,10 +10,10 @@ import Layout from '../components/layout/Layout'
 import { Typing } from '../components/layout/Loader'
 import Msg from '../components/shared/Msg'
 import { InputBox } from '../components/Styled'
-import { alert as ALERT, new_msg, start_typing, stop_typing } from '../constants/events'
+import { alert as ALERT, is_online, new_msg, start_typing, stop_typing, was_online } from '../constants/events'
 import useErrors from '../hooks/useErrors'
 import useSocketEvents from '../hooks/useSocketEvents'
-import { useChatDetailsQuery, useLazyGetMsgsQuery } from '../redux/api'
+import { useChatDetailsQuery, useGetOnlineQuery, useLazyGetMsgsQuery } from '../redux/api'
 import { removeMsgsAlert } from '../redux/reducers/chat'
 import { setIsFileMenu } from '../redux/reducers/misc'
 import { getSocket } from '../socket'
@@ -26,6 +26,7 @@ const Chat = () => {
   const [iAmTyping, setIAmTyping] = useState(false)
   const [userTyping, setUserTyping] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
+  const [online, setOnline] = useState(true)
   const typingTimeout = useRef(null)
   const { id } = useParams()
   const dispatch = useDispatch()
@@ -33,9 +34,16 @@ const Chat = () => {
   const { user } = useSelector(({ auth }) => auth)
   const { uploadingLoader } = useSelector(({ misc }) => misc)
   const { isLoading, data, error, isError } = useChatDetailsQuery({ id, skip: !id })
+  const { isError: onlineIsError, error: onlineError, data: onlineData } = useGetOnlineQuery()
   const [getMsgs] = useLazyGetMsgsQuery()
   const socket = getSocket()
   const members = data?.chat?.members
+  const isOnlineListener = useCallback(data => {
+    if (members.includes(data.id)) setOnline(true)
+  }, [members])
+  const wasOnlineListener = useCallback(data => {
+    if (members.includes(data.id)) setOnline(false)
+  }, [members])
   const fileOpenHandler = async e => {
     if (uploadingLoader) return
     dispatch(setIsFileMenu(true))
@@ -91,9 +99,14 @@ const Chat = () => {
     [start_typing]: startTypingListener,
     [stop_typing]: stopTypingListener,
     [ALERT]: alertListener,
+    [is_online]: isOnlineListener,
+    [was_online]: wasOnlineListener,
   }
   useSocketEvents(socket, eventHandler)
-  useErrors([{ error, isError }])
+  useErrors([
+    { error, isError },
+    { isError: onlineIsError, error: onlineError }
+  ])
   useEffect(() => {
     getMsgs({ id, page: 1 })
       .then(({ isError: msgsIsError, error: msgsError, data: msgsData }) => {
@@ -115,6 +128,16 @@ const Chat = () => {
     }
   }, [dispatch, id])
   useEffect(() => {
+    if (data) {
+      if (onlineData) {
+        if (data.chat.members.length < 3) {
+          const otherPerson = data.chat.members.find(m => m !== user._id)
+          setOnline(onlineData.users.includes(otherPerson))
+        }
+      }
+    }
+  }, [data, onlineData, user._id])
+  useEffect(() => {
     if (isError) navigate('/')
   }, [isError, navigate])
   const fetch = async () => {
@@ -132,6 +155,15 @@ const Chat = () => {
   return (
     isLoading ? <Skeleton /> :
       <>
+        <AppBar sx={{
+          position: 'relative',
+          bgcolor: '#c7eac9',
+          color: '#000',
+          padding: '.5rem',
+          paddingLeft: '1rem'
+        }}>
+          {online ? 'Online' : `Last seen at `}
+        </AppBar>
         <div className='box-border p-4 bg-[#f7f7f7] h-[90%] flex flex-col-reverse overflow-x-hidden overflow-y-auto' id="scrollableDiv">
           <InfiniteScroll
             hasMore={hasMore}

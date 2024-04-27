@@ -10,7 +10,6 @@ const ChatItem = ({
     id,
     grpChat = false,
     selected,
-    isOnline,
     newMsgAlert,
     i = 0,
     deleteChatHandler
@@ -35,7 +34,7 @@ const ChatItem = ({
                         {name}
                     </Typography>
                 </Stack>
-                {(isOnline || newMsgAlert) && <Box className={`w-[20px] h-[20px] rounded-[50px] ${isOnline ? 'bg-green-500' : 'bg-red-500'} text-white absolute right-4 flex items-center justify-center text-xs`}>
+                {newMsgAlert && <Box className='w-[20px] h-[20px] rounded-[50px] bg-green-500 text-white absolute right-4 flex items-center justify-center text-xs'>
                     {newMsgAlert &&
                         <>
                             {newMsgAlert.count}
