@@ -7,11 +7,12 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { v4 as randomId } from 'uuid'
 import { corsOptions } from './constants/config.js'
-import { new_msg, new_msg_alert, start_typing, stop_typing } from './constants/events.js'
+import { is_online, new_msg, new_msg_alert, start_typing, stop_typing, was_online } from './constants/events.js'
 import { getSockets } from './lib/helper.js'
 import { isAuthenticated, socketAuthenticator } from './middlewares/auth.js'
 import { errorMiddleware } from './middlewares/error.js'
 import { Msg } from './models/Msg.js'
+import { User } from './models/User.js'
 import admin from './routes/admin.js'
 import chat from './routes/chat.js'
 import user from './routes/user.js'
@@ -52,8 +53,10 @@ io.use((socket, next) => {
     cookieParser()(socket.request, socket.request.res, async err => await socketAuthenticator(err, socket, next))
 })
 
-io.on('connection', socket => {
+io.on('connection', async socket => {
     const { user } = socket
+    io.emit(is_online, { id: user._id })
+    await User.findByIdAndUpdate(user._id, { online: true })
     userSocketIDs.set(user._id.toString(), socket.id)
     socket.on(new_msg, async ({ id, members, msg }) => {
         const realTimeMsg = {
@@ -88,7 +91,12 @@ io.on('connection', socket => {
     socket.on(stop_typing, ({ members, id }) => {
         socket.to(getSockets(members)).emit(stop_typing, { id })
     })
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
+        await User.findByIdAndUpdate(user._id, {
+            lastOnline: Date.now(),
+            online: false
+        })
+        io.emit(was_online, { id: user._id })
         userSocketIDs.delete(user._id.toString())
         console.log('user disconnected')
     })

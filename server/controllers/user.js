@@ -1,12 +1,12 @@
 import { compare } from 'bcrypt'
-import { tryCatch } from '../middlewares/error.js'
-import { Chat } from '../models/Chat.js'
-import { User } from '../models/User.js'
-import { Request } from '../models/Request.js'
-import { cookieOptions, emitEvent, sendToken, uploadToCloudinary } from '../utils/features.js'
-import { ErrorHandler } from '../utils/utility.js'
 import { new_req, refetch_chats } from '../constants/events.js'
 import { findOtherPerson } from '../lib/helper.js'
+import { tryCatch } from '../middlewares/error.js'
+import { Chat } from '../models/Chat.js'
+import { Request } from '../models/Request.js'
+import { User } from '../models/User.js'
+import { cookieOptions, emitEvent, sendToken, uploadToCloudinary } from '../utils/features.js'
+import { ErrorHandler } from '../utils/utility.js'
 
 const register = tryCatch(async (req, res, next) => {
     const { name, uName, password, about } = req.body
@@ -168,4 +168,10 @@ const getFriends = tryCatch(async (req, res) => {
     }
 })
 
-export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends }
+const getOnline = tryCatch(async (req, res) => {
+    const rawUsers = await User.find({ online: true }).select('_id')
+    const users = rawUsers.map(({ _id }) => _id)
+    res.status(200).json({ success: true, users })
+})
+
+export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline }

@@ -30,7 +30,9 @@ const schema = new Schema({
             type: String,
             required: true
         },
-    }
+    },
+    lastOnline: Date,
+    online: Boolean
 },
     { timestamps: true }
 )

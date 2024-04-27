@@ -42,10 +42,10 @@ const Header = ({ unreadChats }) => {
                                 <Menu />
                             </IconButton>
                         </Box>
-                        {unreadChats > 0 && <Box className={`w-[20px] h-[20px] rounded-[50px] bg-red-500 text-white ml-3 flex items-center justify-center`}>
-                            <Typography>
+                        {unreadChats > 0 && <Box className={`w-[20px] h-[20px] rounded-[50px] bg-red-500 text-white ml-3 flex items-center justify-center text-xs`}>
+                            <>
                                 {unreadChats}
-                            </Typography>
+                            </>
                         </Box>}
                         <Box sx={{ flexGrow: 1 }} />
                         <Box>
