@@ -142,10 +142,16 @@ const api = createApi({
                 credentials: 'include'
             }),
             keepUnusedDataFor: 0,
-            invalidatesTags: ['Chat']
+        }),
+        lastSeen: builder.query({
+            query: id => ({
+                url: `/user/last-seen/${id}`,
+                credentials: 'include'
+            }),
+            keepUnusedDataFor: 0,
         }),
     })
 })
 
 export default api
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery, useDelChatMutation, useLeaveGrpMutation, useGetOnlineQuery } = api
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery, useDelChatMutation, useLeaveGrpMutation, useGetOnlineQuery, useLazyLastSeenQuery } = api

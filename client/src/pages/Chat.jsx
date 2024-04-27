@@ -13,7 +13,7 @@ import { InputBox } from '../components/Styled'
 import { alert as ALERT, is_online, new_msg, start_typing, stop_typing, was_online } from '../constants/events'
 import useErrors from '../hooks/useErrors'
 import useSocketEvents from '../hooks/useSocketEvents'
-import { useChatDetailsQuery, useGetOnlineQuery, useLazyGetMsgsQuery } from '../redux/api'
+import { useChatDetailsQuery, useGetOnlineQuery, useLazyGetMsgsQuery, useLazyLastSeenQuery } from '../redux/api'
 import { removeMsgsAlert } from '../redux/reducers/chat'
 import { setIsFileMenu } from '../redux/reducers/misc'
 import { getSocket } from '../socket'
@@ -27,10 +27,12 @@ const Chat = () => {
   const [userTyping, setUserTyping] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
   const [online, setOnline] = useState(true)
+  const [lastSeen, setLastSeen] = useState('')
   const typingTimeout = useRef(null)
   const { id } = useParams()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [lastSeenQuery] = useLazyLastSeenQuery()
   const { user } = useSelector(({ auth }) => auth)
   const { uploadingLoader } = useSelector(({ misc }) => misc)
   const { isLoading, data, error, isError } = useChatDetailsQuery({ id, skip: !id })
@@ -132,11 +134,21 @@ const Chat = () => {
       if (onlineData) {
         if (data.chat.members.length < 3) {
           const otherPerson = data.chat.members.find(m => m !== user._id)
-          setOnline(onlineData.users.includes(otherPerson))
+          const isOnline = onlineData.users.includes(otherPerson)
+          console.log(onlineData.users)
+          setOnline(isOnline)
+          if (!isOnline) {
+            lastSeenQuery(otherPerson)
+              .then(({ data }) => {
+                console.log(data.lastSeen)
+                setLastSeen(data.lastSeen)
+              })
+              .catch(err => console.log(err))
+          }
         }
       }
     }
-  }, [data, onlineData, user._id])
+  }, [data, lastSeenQuery, onlineData, user._id])
   useEffect(() => {
     if (isError) navigate('/')
   }, [isError, navigate])
@@ -160,11 +172,12 @@ const Chat = () => {
           bgcolor: '#c7eac9',
           color: '#000',
           padding: '.5rem',
-          paddingLeft: '1rem'
+          paddingLeft: '1rem',
+          height: '6%'
         }}>
-          {online ? 'Online' : `Last seen at `}
+          {online ? 'Online' : `Last seen at ${lastSeen}`}
         </AppBar>
-        <div className='box-border p-4 bg-[#f7f7f7] h-[90%] flex flex-col-reverse overflow-x-hidden overflow-y-auto' id="scrollableDiv">
+        <div className='box-border p-4 bg-[#f7f7f7] h-[84%] flex flex-col-reverse overflow-x-hidden overflow-y-auto' id="scrollableDiv">
           <InfiniteScroll
             hasMore={hasMore}
             dataLength={msgs?.length || 0}

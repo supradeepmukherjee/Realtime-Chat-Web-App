@@ -174,4 +174,10 @@ const getOnline = tryCatch(async (req, res) => {
     res.status(200).json({ success: true, users })
 })
 
-export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline }
+const lastSeen = tryCatch(async (req, res) => {
+    const { lastOnline } = await User.findById(req.params.id).select('lastOnline')
+    const lastSeen = lastOnline.toLocaleTimeString()
+    res.status(200).json({ success: true, lastSeen })
+})
+
+export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen }
