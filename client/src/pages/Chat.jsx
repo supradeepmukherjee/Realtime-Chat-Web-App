@@ -36,7 +36,7 @@ const Chat = () => {
   const { user } = useSelector(({ auth }) => auth)
   const { uploadingLoader } = useSelector(({ misc }) => misc)
   const { isLoading, data, error, isError } = useChatDetailsQuery({ id, skip: !id })
-  const { isError: onlineIsError, error: onlineError, data: onlineData } = useGetOnlineQuery()
+  const { isError: onlineIsError, error: onlineError, data: onlineData, isLoading: onlineLoading } = useGetOnlineQuery()
   const [getMsgs] = useLazyGetMsgsQuery()
   const socket = getSocket()
   const members = data?.chat?.members
@@ -44,7 +44,10 @@ const Chat = () => {
     if (members.includes(data.id)) setOnline(true)
   }, [members])
   const wasOnlineListener = useCallback(data => {
-    if (members.includes(data.id)) setOnline(false)
+    if (members.includes(data.id)) {
+      setOnline(false)
+      setLastSeen(data.time)
+    }
   }, [members])
   const fileOpenHandler = async e => {
     if (uploadingLoader) return
@@ -135,20 +138,16 @@ const Chat = () => {
         if (data.chat.members.length < 3) {
           const otherPerson = data.chat.members.find(m => m !== user._id)
           const isOnline = onlineData.users.includes(otherPerson)
-          console.log(onlineData.users)
           setOnline(isOnline)
           if (!isOnline) {
             lastSeenQuery(otherPerson)
-              .then(({ data }) => {
-                console.log(data.lastSeen)
-                setLastSeen(data.lastSeen)
-              })
+              .then(({ data }) => setLastSeen(data.lastSeen))
               .catch(err => console.log(err))
           }
         }
       }
     }
-  }, [data, lastSeenQuery, onlineData, user._id])
+  }, [data, lastSeenQuery, online, onlineData, user._id])
   useEffect(() => {
     if (isError) navigate('/')
   }, [isError, navigate])
@@ -165,7 +164,7 @@ const Chat = () => {
     }
   }
   return (
-    isLoading ? <Skeleton /> :
+    (isLoading || onlineLoading) ? <Skeleton /> :
       <>
         <AppBar sx={{
           position: 'relative',

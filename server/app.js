@@ -96,7 +96,10 @@ io.on('connection', async socket => {
             lastOnline: Date.now(),
             online: false
         })
-        io.emit(was_online, { id: user._id })
+        io.emit(was_online, {
+            id: user._id,
+            time: new Date().toLocaleTimeString()
+        })
         userSocketIDs.delete(user._id.toString())
         console.log('user disconnected')
     })
