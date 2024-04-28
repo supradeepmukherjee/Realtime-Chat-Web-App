@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { acceptRequest, getFriends, getMyProfile, getOnline, getRequests, lastSeen, login, logOut, register, searchUser, sendRequest } from '../controllers/user.js'
+import { acceptRequest, getFriends, getMyProfile, getOnline, getRequests, lastSeen, login, logOut, markAsRead, register, searchUser, sendRequest, unreadChats } from '../controllers/user.js'
 import { acceptRequestValidator, loginValidator, registerValidator, sendRequestValidator, validateHandler } from '../lib/validators.js'
 import { isAuthenticated } from '../middlewares/auth.js'
 import { singleChavi } from '../middlewares/multer.js'
@@ -19,5 +19,7 @@ app.get('/notifications', getRequests)
 app.get('/friends', getFriends)
 app.get('/online', getOnline)
 app.get('/last-seen/:id', lastSeen)
+app.get('/unread/:id', unreadChats)
+app.put('/read/:id', markAsRead)
 
 export default app

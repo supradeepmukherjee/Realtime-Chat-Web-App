@@ -50,6 +50,7 @@ const searchUser = tryCatch(async (req, res) => {
         members: req.user
     })
     const allUsersOfMyChats = chats.flatMap(c => c.members).filter(m => m !== req.user)
+    allUsersOfMyChats.push(req.user)
     const allUsersExceptMeAndFriends = await User.find({
         _id: { $nin: allUsersOfMyChats },
         name: {
@@ -180,4 +181,19 @@ const lastSeen = tryCatch(async (req, res) => {
     res.status(200).json({ success: true, lastSeen })
 })
 
-export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen }
+const unreadChats = tryCatch(async (req, res) => {
+    const unread = await User.findById(req.params.id).select('unread')
+    res.status(200).json({ success: true, unread })
+})
+
+const markAsRead = tryCatch(async (req, res) => {
+    const user = await User.findById(req.params.id).select('unread')
+    if (user.unread.length > 0) {
+        const readChats = user.unread?.filter(({ chat }) => chat?.toString() !== req.query.chat)
+        user.unread = readChats
+        await user.save()
+    }
+    res.status(200).json({ success: true, msg: 'Marked as Read' })
+})
+
+export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen, unreadChats, markAsRead }

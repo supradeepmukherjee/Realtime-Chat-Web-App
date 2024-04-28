@@ -150,8 +150,25 @@ const api = createApi({
             }),
             keepUnusedDataFor: 0,
         }),
+        unread: builder.query({
+            query: id => ({
+                url: `/user/unread/${id}`,
+                credentials: 'include'
+            }),
+            keepUnusedDataFor: 0,
+            invalidatesTags: ['Chat']
+        }),
+        read: builder.mutation({
+            query: ({ userID, chatID }) => ({
+                url: `/user/read/${userID}?chat=${chatID}`,
+                credentials: 'include',
+                method: 'PUT'
+            }),
+            keepUnusedDataFor: 0,
+            invalidatesTags: ['Chat']
+        }),
     })
 })
 
 export default api
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery, useDelChatMutation, useLeaveGrpMutation, useGetOnlineQuery, useLazyLastSeenQuery } = api
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery, useDelChatMutation, useLeaveGrpMutation, useGetOnlineQuery, useLazyLastSeenQuery, useUnreadQuery, useReadMutation, useLazyUnreadQuery } = api

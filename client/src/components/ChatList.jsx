@@ -10,8 +10,8 @@ const ChatList = ({
 }) => {
     return (
         <Stack width={w}>
-            {chats.map(({ _id, name, chavi, members, grpChat }, i) => {
-                const newMsgAlert = newMsgsAlert.find(({ id }) => id === _id)
+            {chats.map(({ _id, name, chavi, grpChat }, i) => {
+                const newMsgAlert = newMsgsAlert.find(({ chat }) => chat === _id)
                 return <ChatItem key={i} name={name} chavi={chavi} id={_id} newMsgAlert={newMsgAlert} grpChat={grpChat} selected={id === _id} deleteChatHandler={deleteChatHandler} i={i} />
             })}
         </Stack>

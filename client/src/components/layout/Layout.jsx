@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { new_msg_alert, new_req, refetch_chats } from '../../constants/events'
 import useErrors from '../../hooks/useErrors'
+import useMutation from '../../hooks/useMutation'
 import useSocketEvents from '../../hooks/useSocketEvents'
-import { getOrSave_Storage } from '../../lib/features'
-import { useMyChatsQuery } from '../../redux/api'
-import { incrementNotificationCount, setNewMsgsAlert } from '../../redux/reducers/chat'
+import { useMyChatsQuery, useReadMutation, useUnreadQuery } from '../../redux/api'
+import { incrementNotificationCount, setFreshNewMsgsAlert, setNewMsgsAlert } from '../../redux/reducers/chat'
 import { setIsDeleteMenu, setIsMobile, setSelectedDelChat } from '../../redux/reducers/misc'
 import { getSocket } from '../../socket'
 import ChatList from '../ChatList'
@@ -24,9 +24,12 @@ const Layout = () => WrappedComponent => {
         const dispatch = useDispatch()
         const navigate = useNavigate()
         const anchorEl = useRef(null)
+        const [readChat] = useMutation(useReadMutation)
         const { isMobile, isDeleteMenu, selectedDelChat } = useSelector(({ misc }) => misc)
         const { newMsgsAlert } = useSelector(({ chat }) => chat)
+        const { user } = useSelector(({ auth }) => auth)
         const { isLoading, data, isError, error, refetch } = useMyChatsQuery()
+        const { isLoading: unreadLoading, data: unreadData, isError: unreadIsError, error: unreadError } = useUnreadQuery(user._id)
         const socket = getSocket()
         const deleteChatHandler = async (e, id, grpChat) => {
             anchorEl.current = e.currentTarget
@@ -51,15 +54,28 @@ const Layout = () => WrappedComponent => {
             [refetch_chats]: refetchListener
         }
         useSocketEvents(socket, eventHandlers)
-        useErrors([{ isError, error }])
+        useErrors([
+            { isError, error },
+            { unreadIsError, unreadError },
+        ])
         useEffect(() => {
-            getOrSave_Storage(false, new_msg_alert, newMsgsAlert)
-        }, [newMsgsAlert])
+            if (unreadData) {
+                console.log(unreadData)
+                const { unread } = unreadData
+                dispatch(setFreshNewMsgsAlert(unread.unread))
+            }
+        }, [unreadData])
+        useEffect(() => {
+            return () => {
+                readChat('Marked as Read', { userID: user._id, chatID: id })
+            }
+        }, [id, user._id])
+        console.log(newMsgsAlert)
         return (
             <>
                 <Title />
                 <Header unreadChats={newMsgsAlert.length - 1} />
-                {isLoading ? <Skeleton /> :
+                {(isLoading || unreadLoading) ? <Skeleton /> :
                     <Drawer open={isMobile} onClose={() => dispatch(setIsMobile(!isMobile))}>
                         <ChatList w='70vw' chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler} newMsgsAlert={newMsgsAlert} />
                     </Drawer>}
@@ -76,7 +92,7 @@ const Layout = () => WrappedComponent => {
                             height: '100%',
                             overflowY: 'auto'
                         }}>
-                        {isLoading ? <Skeleton /> : <ChatList chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler} newMsgsAlert={newMsgsAlert} />}
+                        {(isLoading || unreadLoading) ? <Skeleton /> : <ChatList chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler} newMsgsAlert={newMsgsAlert} />}
                     </Grid>
                     <Grid item xs={12} sm={8} md={5} lg={6} height='100%'>
                         <WrappedComponent {...p} />
@@ -97,7 +113,7 @@ const Layout = () => WrappedComponent => {
                         <Profile />
                     </Grid>
                 </Grid>
-                <DelChatMenu open={isDeleteMenu} closeHandler={closeDelChatMenu} anchorEl={anchorEl.current} selectedDelChat={selectedDelChat} />
+                {/* <DelChatMenu open={isDeleteMenu} closeHandler={closeDelChatMenu} anchorEl={anchorEl.current} selectedDelChat={selectedDelChat} /> */}
             </>)
     }
 }

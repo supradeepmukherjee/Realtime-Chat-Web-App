@@ -1,5 +1,5 @@
 import { hash } from 'bcrypt'
-import mongoose, { model, Schema } from 'mongoose'
+import mongoose, { model, Schema, Types } from 'mongoose'
 
 const schema = new Schema({
     name: {
@@ -32,7 +32,14 @@ const schema = new Schema({
         },
     },
     lastOnline: Date,
-    online: Boolean
+    online: Boolean,
+    unread: [{
+        chat: {
+            type: Types.ObjectId,
+            ref: 'ChatUser'
+        },
+        qty: Number
+    }]
 },
     { timestamps: true }
 )

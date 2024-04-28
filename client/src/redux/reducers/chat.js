@@ -4,9 +4,9 @@ import { getOrSave_Storage } from '../../lib/features'
 
 const initialState = {
     notificationCount: 0,
-    newMsgsAlert: getOrSave_Storage(true, new_msg_alert) ||  [{
-        id: '',
-        count: 0
+    newMsgsAlert: [{
+        chat: '',
+        qty: 0
     }]
 }
 
@@ -23,16 +23,19 @@ const chatSlice = createSlice({
         resetNotificationCount: state => {
             state.notificationCount = 0
         },
+        setFreshNewMsgsAlert: (state, action) => {
+            state.newMsgsAlert = action.payload
+        },
         setNewMsgsAlert: (state, action) => {
-            const i = state.newMsgsAlert.findIndex(({ id }) => id === action.payload)
-            if (i !== -1) state.newMsgsAlert[i].count += 1
-            else state.newMsgsAlert.push({ id: action.payload, count: 1 })
+            const i = state.newMsgsAlert.findIndex(({ chat }) => chat === action.payload)
+            if (i !== -1) state.newMsgsAlert[i].qty += 1
+            else state.newMsgsAlert.push({ chat: action.payload, qty: 1 })
         },
         removeMsgsAlert: (state, action) => {
-            state.newMsgsAlert = state.newMsgsAlert.filter(({ id }) => id !== action.payload)
+            state.newMsgsAlert = state.newMsgsAlert.filter(({ chat }) => chat !== action.payload)
         }
     }
 })
 
 export default chatSlice
-export const { incrementNotificationCount, resetNotificationCount, setNewMsgsAlert, removeMsgsAlert, setNotificationCount } = chatSlice.actions
+export const { incrementNotificationCount, resetNotificationCount, setNewMsgsAlert, removeMsgsAlert, setNotificationCount, setFreshNewMsgsAlert } = chatSlice.actions

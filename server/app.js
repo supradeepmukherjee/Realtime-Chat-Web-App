@@ -81,6 +81,15 @@ io.on('connection', async socket => {
                 chat: id,
                 sender: user._id
             })
+            for (let i = 0; i < members.length; i++) {
+                if (members[i] !== user._id.toString()) {
+                    const dbUser = await User.findById(members[i])
+                    const index = dbUser.unread.findIndex(({ chat }) => chat.toString() === id)
+                    if (index !== -1) dbUser.unread[index].qty += 1
+                    else dbUser.unread.push({ chat: id, qty: 1 })
+                    await dbUser.save()
+                }
+            }
         } catch (err) {
             console.log(err)
         }
