@@ -166,17 +166,19 @@ const Chat = () => {
   return (
     (isLoading || onlineLoading) ? <Skeleton /> :
       <>
-        <AppBar sx={{
-          position: 'relative',
-          bgcolor: '#c7eac9',
-          color: '#000',
-          padding: '.5rem',
-          paddingLeft: '1rem',
-          height: '6%'
-        }}>
-          {online ? 'Online' : `Last seen at ${lastSeen}`}
-        </AppBar>
-        <div className='box-border p-4 bg-[#f7f7f7] h-[84%] flex flex-col-reverse overflow-x-hidden overflow-y-auto' id="scrollableDiv">
+        {!data.chat.grpChat &&
+          <AppBar sx={{
+            position: 'relative',
+            bgcolor: '#c7eac9',
+            color: '#000',
+            height: '5%',
+            display: 'flex',
+            justifyContent: 'center',
+            paddingLeft: '.5rem'
+          }}>
+            {online ? 'Online' : `Last seen at ${lastSeen}`}
+          </AppBar>}
+        <div className={`box-border p-4 bg-[#f7f7f7] ${data.chat.grpChat ? 'h-[90%]' : 'h-[85%]'} flex flex-col-reverse overflow-x-hidden overflow-y-auto' id="scrollableDiv`}>
           <InfiniteScroll
             hasMore={hasMore}
             dataLength={msgs?.length || 0}

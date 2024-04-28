@@ -176,7 +176,7 @@ const getOnline = tryCatch(async (req, res) => {
 
 const lastSeen = tryCatch(async (req, res) => {
     const { lastOnline } = await User.findById(req.params.id).select('lastOnline')
-    const lastSeen = lastOnline.toLocaleTimeString()
+    const lastSeen = lastOnline.toLocaleString()
     res.status(200).json({ success: true, lastSeen })
 })
 
