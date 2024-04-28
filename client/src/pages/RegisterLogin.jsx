@@ -1,5 +1,6 @@
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 import Camera from '@mui/icons-material/CameraAlt'
-import { Avatar as Chavi, Button, Container, IconButton, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Avatar as Chavi, Button, Container, IconButton, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -16,6 +17,7 @@ const RegisterLogin = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [login, setLogin] = useState(true)
+  const [show, setShow] = useState(false)
   const [loginCredentials, setLoginCredentials] = useState({
     uName: '',
     password: ''
@@ -127,7 +129,24 @@ const RegisterLogin = () => {
             </Typography>
             <form onSubmit={loginHandler} className='w-full mt-4'>
               <TextField required fullWidth label='Username' name='uName' margin='normal' value={loginCredentials.uName} onChange={loginCredentialsChangeHandler} />
-              <TextField required fullWidth label='Password' name='password' margin='normal' type='password' value={loginCredentials.password} onChange={loginCredentialsChangeHandler} />
+              <TextField
+                required
+                fullWidth
+                label='Password'
+                name='password'
+                margin='normal'
+                type={show ? 'text' : 'password'}
+                value={loginCredentials.password}
+                onChange={loginCredentialsChangeHandler}
+                InputProps={{
+                  endAdornment:
+                    <InputAdornment position='end'>
+                      <IconButton onClick={() => setShow(s => !s)}>
+                        {show ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                }}
+              />
               <div className="flex justify-center">
                 <Button variant='contained' type='submit' className='!mt-4' disabled={loading}>
                   Login
@@ -158,7 +177,24 @@ const RegisterLogin = () => {
               <TextField required fullWidth label='Name' name='name' margin='dense' value={userDetails.name} onChange={userDetailsChangeHandler} />
               <TextField required fullWidth label='Username' name='uName' margin='dense' value={userDetails.uName} onChange={userDetailsChangeHandler} />
               <TextField required fullWidth label='About' name='about' margin='dense' value={userDetails.about} onChange={userDetailsChangeHandler} />
-              <TextField required fullWidth label='Password' name='password' margin='dense' type='password' value={userDetails.password} onChange={userDetailsChangeHandler} />
+              <TextField
+                required
+                fullWidth
+                label='Password'
+                name='password'
+                margin='dense'
+                type={show ? 'text' : 'password'}
+                value={userDetails.password}
+                onChange={userDetailsChangeHandler}
+                InputProps={{
+                  endAdornment:
+                    <InputAdornment position='end'>
+                      <IconButton onClick={() => setShow(s => !s)}>
+                        {show ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                }}
+              />
               <div className="flex justify-center">
                 <Button variant='contained' type='submit' className='!mt-4' disabled={loading}>
                   Register
