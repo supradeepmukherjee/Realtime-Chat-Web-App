@@ -9,7 +9,7 @@ import UserItem from '../components/shared/UserItem'
 import { Link } from "../components/Styled"
 import useErrors from '../hooks/useErrors'
 import useMutation from '../hooks/useMutation'
-import { useChatDetailsQuery, useDelChatMutation, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation } from '../redux/api'
+import { useChatDetailsQuery, useDelChatMutation, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation, useToggleAdminMutation } from '../redux/api'
 import { setIsAddMember, setIsDelGrp } from '../redux/reducers/misc'
 const DeleteGrp = lazy(() => import('../components/dialog/DeleteGrp'))
 const AddMember = lazy(() => import('../components/dialog/AddMember'))
@@ -21,6 +21,7 @@ const Groups = () => {
   const [grpName, setGrpName] = useState('')
   const [members, setMembers] = useState([])
   const [updatedGrpName, setUpdatedGrpName] = useState('')
+  const { user } = useSelector(({ auth }) => auth)
   const { isAddMember, isDelGrp } = useSelector(({ misc }) => misc)
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -32,6 +33,7 @@ const Groups = () => {
   const [renameGrp, renameLoading] = useMutation(useRenameGrpMutation)
   const [removeMember, removeLoading] = useMutation(useRemoveMemberMutation)
   const [delGrp, delLoading] = useMutation(useDelChatMutation)
+  const [toggleAdmin, toggleAdminLoading] = useMutation(useToggleAdminMutation)
   const toggleDelete = () => dispatch(setIsDelGrp(!isDelGrp))
   const toggleAddMember = () => dispatch(setIsAddMember(!isAddMember))
   const deleteHandler = async () => {
@@ -124,6 +126,11 @@ const Groups = () => {
                   isSelected={true}
                   handler={() => removeHandler(member._id)}
                   loading={removeLoading}
+                  chatID={grpData?.chat?._id}
+                  showBtn={grpData?.chat?.admin.includes(user._id)}
+                  isAdmin={grpData?.chat?.admin.includes(member._id)}
+                  showAdminBtn={true}
+                  toggleAdmin={toggleAdmin}
                   style={{
                     boxShadow: '0 0 .5rem rgba(0,0,0,.2)',
                     padding: '1rem 2rem',
@@ -131,25 +138,26 @@ const Groups = () => {
                   }}
                 />)}
               </Stack>
-              <Stack
-                direction={{
-                  xs: 'column-reverse',
-                  sm: 'row'
-                }}
-                p={{
-                  xs: '0',
-                  sm: '1rem',
-                  md: '1rem 4rem'
-                }}
-                spacing='1rem'
-              >
-                <Button color='error' variant='outlined' startIcon={<Delete />} onClick={toggleDelete}>
-                  Delete Group
-                </Button>
-                <Button variant='contained' startIcon={<Add />} onClick={toggleAddMember}>
-                  Add Member
-                </Button>
-              </Stack>
+              {grpData?.chat?.admin.includes(user._id) &&
+                <Stack
+                  direction={{
+                    xs: 'column-reverse',
+                    sm: 'row'
+                  }}
+                  p={{
+                    xs: '0',
+                    sm: '1rem',
+                    md: '1rem 4rem'
+                  }}
+                  spacing='1rem'
+                >
+                  <Button color='error' variant='outlined' startIcon={<Delete />} onClick={toggleDelete}>
+                    Delete Group
+                  </Button>
+                  <Button variant='contained' startIcon={<Add />} onClick={toggleAddMember}>
+                    Add Member
+                  </Button>
+                </Stack>}
             </>}
         </Grid>
         {isAddMember &&

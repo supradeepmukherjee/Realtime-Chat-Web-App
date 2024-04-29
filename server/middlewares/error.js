@@ -23,6 +23,7 @@ const tryCatch = f => async (req, res, next) => {
     try {
         await f(req, res, next)
     } catch (err) {
+        console.log(err)
         next(err)
     }
 }

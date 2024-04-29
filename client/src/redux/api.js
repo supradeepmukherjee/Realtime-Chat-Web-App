@@ -167,8 +167,17 @@ const api = createApi({
             keepUnusedDataFor: 0,
             invalidatesTags: ['Chat']
         }),
+        toggleAdmin: builder.mutation({
+            query: data => ({
+                url: `/chat/make-admin`,
+                method: `PUT`,
+                body: data,
+                credentials: 'include'
+            }),
+            invalidatesTags: ['Chat']
+        }),
     })
 })
 
 export default api
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery, useDelChatMutation, useLeaveGrpMutation, useGetOnlineQuery, useLazyLastSeenQuery, useUnreadQuery, useReadMutation, useLazyUnreadQuery } = api
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery, useDelChatMutation, useLeaveGrpMutation, useGetOnlineQuery, useLazyLastSeenQuery, useUnreadQuery, useReadMutation, useLazyUnreadQuery, useToggleAdminMutation } = api

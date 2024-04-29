@@ -34,6 +34,12 @@ const removeMemberValidator = () => [
     body('userID', 'Please Enter User ID').notEmpty(),
 ]
 
+const toggleAdminValidator = () => [
+    body('make', 'Please Enter value to make/remove admin rights').notEmpty(),
+    body('chatID', 'Please Enter Chat ID').notEmpty(),
+    body('userID', 'Please Enter User ID').notEmpty(),
+]
+
 const sendAttachmentsValidator = () => [body('id', 'Please Enter Chat ID').notEmpty()]
 
 const chatIDValidator = () => [param('id', 'Please Enter Chat ID').notEmpty()]
@@ -54,4 +60,4 @@ const acceptRequestValidator = () => [
 
 const adminLoginValidator = () => [body('key', 'Please Enter the Key').notEmpty()]
 
-export { validateHandler, registerValidator, loginValidator, newGrpValidator, addMembersValidator, removeMemberValidator, sendAttachmentsValidator, chatIDValidator, renameGrpValidator, sendRequestValidator, acceptRequestValidator, adminLoginValidator }
+export { validateHandler, registerValidator, loginValidator, newGrpValidator, addMembersValidator, removeMemberValidator, sendAttachmentsValidator, chatIDValidator, renameGrpValidator, sendRequestValidator, acceptRequestValidator, adminLoginValidator, toggleAdminValidator }

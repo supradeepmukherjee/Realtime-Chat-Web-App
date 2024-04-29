@@ -14,7 +14,7 @@ const newGrpChat = tryCatch(async (req, res, next) => {
         name,
         grpChat: true,
         members: allMembers,
-        admin: [...req.user]
+        admin: [req.user]
     })
     emitEvent(req, alert, members, `Welcome to ${name} Group`)
     emitEvent(req, refetch_chats, members)
@@ -234,4 +234,20 @@ const getMsgs = tryCatch(async (req, res, next) => {
     res.status(200).json({ success: true, msgs, totalPages })
 })
 
-export { newGrpChat, getMyChats, getMyGrps, addMembers, removeMember, leaveGroup, sendAttachments, getGroupDetails, renameGrp, delGroup, getMsgs }
+const toggleAdmin = tryCatch(async (req, res, next) => {
+    const { chatID, userID, make } = req.body
+    const chat = await Chat.findById(chatID)
+    if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
+    if (!chat.grpChat) return next(new ErrorHandler(400, 'Not a Group Chat'))
+    if (!chat.admin.includes(req.user)) return next(new ErrorHandler(403, 'You are not allowed to remove Members'))
+    if (make) chat.admin.push(userID)
+    else {
+        if (chat.admin.length === 1) return next(new ErrorHandler(400, 'A group must have atleast 1 admin'))
+        const afterRemoved = chat.admin.filter(a => a.toString() !== userID)
+        chat.admin = afterRemoved
+    }
+    await chat.save()
+    res.status(200).json({ success: true, msg: make ? 'Assigned Admin Rights' : 'Revoked Admin Rights' })
+})
+
+export { newGrpChat, getMyChats, getMyGrps, addMembers, removeMember, leaveGroup, sendAttachments, getGroupDetails, renameGrp, delGroup, getMsgs, toggleAdmin }
