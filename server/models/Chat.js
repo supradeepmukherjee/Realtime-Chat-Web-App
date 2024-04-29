@@ -9,10 +9,10 @@ const schema = new Schema({
         type: Boolean,
         default: false,
     },
-    creator: {
+    admin: [{
         type: Types.ObjectId,
         ref: 'ChatUser'
-    },
+    }],
     members: [{
         type: Types.ObjectId,
         ref: 'ChatUser',

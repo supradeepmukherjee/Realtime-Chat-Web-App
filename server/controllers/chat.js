@@ -14,7 +14,7 @@ const newGrpChat = tryCatch(async (req, res, next) => {
         name,
         grpChat: true,
         members: allMembers,
-        creator: req.user
+        admin: [...req.user]
     })
     emitEvent(req, alert, members, `Welcome to ${name} Group`)
     emitEvent(req, refetch_chats, members)
@@ -61,7 +61,7 @@ const addMembers = tryCatch(async (req, res, next) => {
     const chat = await Chat.findById(id)
     if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
     if (!chat.grpChat) return next(new ErrorHandler(400, 'Not a Group Chat'))
-    if (chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler(403, 'You are not allowed to Add Members'))
+    if (!chat.admin.includes(req.user)) return next(new ErrorHandler(403, 'You are not allowed to Add Members'))
     const allNewMembersPromise = members.map(m => User.findById(m, 'name'))
     const allNewMembers = await Promise.all(allNewMembersPromise)
     const uniqueMembers = allNewMembers.filter(m =>
@@ -85,7 +85,7 @@ const removeMember = tryCatch(async (req, res, next) => {
     const [chat, user] = await Promise.all([Chat.findById(chatID), User.findById(userID, 'name')])
     if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
     if (!chat.grpChat) return next(new ErrorHandler(400, 'Not a Group Chat'))
-    if (chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler(403, 'You are not allowed to remove Members'))
+    if (!chat.admin.includes(req.user)) return next(new ErrorHandler(403, 'You are not allowed to remove Members'))
     if (chat.members.length < 4) return next(new ErrorHandler(400, 'Group must have atleast 3 members'))
     const origChatMembers = chat.members.map(({ _id }) => _id.toString())
     chat.members = chat.members.filter(m => m.toString() !== userID.toString())
@@ -111,10 +111,7 @@ const leaveGroup = tryCatch(async (req, res, next) => {
     if (!chat.members.includes(req.user)) return next(new ErrorHandler(400, 'Person not present in group'))
     if (chat.members.length < 4) return next(new ErrorHandler(400, 'Group must have atleast 3 members'))
     const filterMe = chat.members.filter(m => m.toString() !== req.user.toString())
-    if (chat.creator.toString() === req.user.toString()) {
-        const remainingMembers = filterMe
-        chat.creator = remainingMembers[Math.floor(Math.random() * remainingMembers.length)]
-    }
+    if (chat.admin.includes(req.user) && chat.admin.length === 1) return next(new ErrorHandler(400, 'Please assign a new Admin before leaving the Group'))
     chat.members = filterMe
     const [user] = await Promise.all([User.findById(req.user, 'name'), chat.save()])
     emitEvent(
@@ -183,7 +180,7 @@ const renameGrp = tryCatch(async (req, res, next) => {
     const chat = await Chat.findById(req.params.id)
     if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
     if (!chat.grpChat) return next(new ErrorHandler(400, 'Not a Group Chat'))
-    if (chat.creator.toString() !== req.user.toString()) return next(new ErrorHandler(403, 'You are not allowed to change group name'))
+    if (!chat.admin.includes(req.user)) return next(new ErrorHandler(403, 'You are not allowed to change group name'))
     chat.name = req.body.name
     await chat.save()
     emitEvent(req, refetch_chats, chat.members)
@@ -194,7 +191,7 @@ const delGroup = tryCatch(async (req, res, next) => {
     const { id } = req.params
     const chat = await Chat.findById(id)
     if (!chat) return next(new ErrorHandler(404, 'Chat Not Found'))
-    if (chat.grpChat && (chat.creator.toString() !== req.user)) return next(new ErrorHandler(403, 'You are not allowed to delete this group'))
+    if (chat.grpChat && (!chat.admin.includes(req.user))) return next(new ErrorHandler(403, 'You are not allowed to delete this group'))
     if (!chat.grpChat && !chat.members.includes(req.user.toString())) return next(new ErrorHandler(403, 'You are not allowed to delete this chat'))
     const msgsWithAttachments = await Msg.find({
         chat: id,

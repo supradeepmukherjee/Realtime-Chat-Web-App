@@ -22,7 +22,7 @@ const getAdminData = (req, res) => res.status(200).json({ success: true, admin: 
 const getUsers = tryCatch(async (req, res) => {
     const rawUsers = await User.find()
         .populate('members', 'name chavi')
-        .populate('creator', 'name chavi')
+        .populate('admin', 'name chavi')
     const users = await Promise.all(rawUsers.map(async ({ name, uName, chavi, _id }) => {
         const [grps, friends] = await Promise.all([
             Chat.countDocuments({
@@ -48,12 +48,12 @@ const getUsers = tryCatch(async (req, res) => {
 
 const getChats = tryCatch(async (req, res) => {
     const rawChats = await Chat.find()
-    const chats = await Promise.all(rawChats.map(async ({ name, grpChat, _id, members, creator }) => {
+    const chats = await Promise.all(rawChats.map(async ({ name, grpChat, _id, members, admin }) => {
         const totalMsgs = await Msg.countDocuments({ chat: _id })
         return {
             _id,
             name,
-            grpChat,
+            grpChat: grpChat ? 'Yes' : 'No',
             totalMsgs,
             chavi: members.slice(0, 3).map(({ chavi }) => chavi.url),
             totalMembers: members.length,
@@ -62,10 +62,10 @@ const getChats = tryCatch(async (req, res) => {
                 name,
                 chavi: chavi
             })),
-            creator: {
-                name: creator?.name || 'None',
-                chavi: creator?.chavi.url || null
-            },
+            admin: admin.map(({ name, chavi }) => ({
+                name: name || 'None',
+                chavi: chavi.url || null
+            })),
         }
     }))
     res.status(200).json({ success: true, chats })
@@ -81,7 +81,7 @@ const getMsgs = tryCatch(async (req, res) => {
         content,
         createdAt,
         chat: chat._id,
-        grpChat: chat.grpChat,
+        grpChat: chat.grpChat ? 'Yes' : 'No',
         sender: {
             _id: sender._id,
             name: sender.name,
