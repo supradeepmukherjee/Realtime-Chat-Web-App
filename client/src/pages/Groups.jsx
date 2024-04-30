@@ -1,14 +1,14 @@
 import { Add, Delete, Done, Edit, KeyboardBackspace as Back, Menu } from '@mui/icons-material'
-import { Backdrop, Box, Button, Drawer, Grid, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material"
+import { Avatar as Chavi, Backdrop, Box, Button, Drawer, Grid, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material"
 import { lazy, Suspense, useEffect, useState } from "react"
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Loader } from '../components/layout/Loader'
-import ChaviCard from '../components/shared/ChaviCard'
 import UserItem from '../components/shared/UserItem'
 import { Link } from "../components/Styled"
 import useErrors from '../hooks/useErrors'
 import useMutation from '../hooks/useMutation'
+import { transformImg } from '../lib/features'
 import { useChatDetailsQuery, useDelChatMutation, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation, useToggleAdminMutation } from '../redux/api'
 import { setIsAddMember, setIsDelGrp } from '../redux/reducers/misc'
 const DeleteGrp = lazy(() => import('../components/dialog/DeleteGrp'))
@@ -125,7 +125,7 @@ const Groups = () => {
                   user={member}
                   isSelected={true}
                   handler={() => removeHandler(member._id)}
-                  loading={removeLoading}
+                  loading={removeLoading || toggleAdminLoading}
                   chatID={grpData?.chat?._id}
                   showBtn={grpData?.chat?.admin.includes(user._id)}
                   isAdmin={grpData?.chat?.admin.includes(member._id)}
@@ -225,7 +225,7 @@ const GroupsList = ({ w = '100%', myGrps, id }) => (
             className={selected ? 'bg-[#000] !text-[#fff] hover:!bg-[#000] hover:!text-[#fff]' : ''}
           >
             <Stack className='items-center !flex-row gap-4'>
-              <ChaviCard chavi={chavi} />
+              <Chavi src={transformImg(chavi)} alt='Group Chavi' />
               <Typography>
                 {name}
               </Typography>

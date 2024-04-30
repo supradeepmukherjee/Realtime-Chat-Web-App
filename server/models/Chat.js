@@ -19,14 +19,8 @@ const schema = new Schema({
         max: 100
     }],
     chavi: {
-        publicID: {
-            type: String,
-            required: true
-        },
-        url: {
-            type: String,
-            required: true
-        },
+        publicID: String,
+        url: String,
     },
 },
     { timestamps: true }

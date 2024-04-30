@@ -34,7 +34,7 @@ const newGrpChat = tryCatch(async (req, res, next) => {
 
 const getMyChats = tryCatch(async (req, res, next) => {
     const chats = await Chat.find({ members: req.user }).populate('members', 'name chavi')
-    const transformedChats = chats.map(({ _id, name, members, grpChat }) => {
+    const transformedChats = chats.map(({ _id, name, members, grpChat, chavi }) => {
         const otherPerson = findOtherPerson(members, req.user)
         return {
             _id,
@@ -45,9 +45,9 @@ const getMyChats = tryCatch(async (req, res, next) => {
                 return prev
             }, []),
             chavi: grpChat ?
-                members.slice(0, 3).map(({ chavi }) => chavi.url)
+                chavi.url
                 :
-                [otherPerson.chavi.url]
+                otherPerson.chavi.url
         }
     })
     res.status(200).json({ success: true, chats: transformedChats })
@@ -58,11 +58,11 @@ const getMyGrps = tryCatch(async (req, res, next) => {
         members: req.user,
         grpChat: true
     }).populate('members', 'name chavi')
-    const grps = chats.map(({ members, _id, grpChat, name }) => ({
+    const grps = chats.map(({ members, _id, grpChat, name, chavi }) => ({
         _id,
         grpChat,
         name,
-        chavi: members.slice(0, 3).map(({ chavi }) => chavi.url)
+        chavi: chavi.url
     }))
     res.status(200).json({ success: true, grps })
 })

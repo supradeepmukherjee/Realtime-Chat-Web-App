@@ -1,15 +1,15 @@
-import { Box, Stack, Typography } from "@mui/material"
-import { memo } from "react"
-import { Link } from "../Styled"
-import ChaviCard from "./ChaviCard"
+import { Avatar as Chavi, Box, Stack, Typography } from "@mui/material"
 import { motion } from 'framer-motion'
-import useMutation from "../../hooks/useMutation"
-import { useLazyUnreadQuery, useReadMutation } from "../../redux/api"
+import { memo } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import useMutation from "../../hooks/useMutation"
+import { transformImg } from "../../lib/features"
+import { useLazyUnreadQuery, useReadMutation } from "../../redux/api"
 import { setFreshNewMsgsAlert } from "../../redux/reducers/chat"
+import { Link } from "../Styled"
 
 const ChatItem = ({
-    chavi = [],
+    chavi,
     name,
     id,
     grpChat = false,
@@ -46,7 +46,7 @@ const ChatItem = ({
                 onContextMenu={e => e.preventDefault()}
             >
                 <div className={`flex items-center p-4 gap-4 relative ${selected ? 'bg-[#000] text-[#fff]' : ''}`}>
-                    <ChaviCard chavi={chavi} />
+                    <Chavi src={transformImg(chavi)} alt='chavi' />
                     <Stack>
                         <Typography>
                             {name}
