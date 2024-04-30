@@ -21,7 +21,7 @@ const loginValidator = () => [
 
 const newGrpValidator = () => [
     body('name', 'Please Enter Group Name').notEmpty(),
-    body('members').notEmpty().withMessage('Please Select the People to be Added').isArray({ min: 2, max: 99 }).withMessage('A group must have atleast 3 members')
+    body('members').notEmpty().withMessage('Please Select the People to be Added')
 ]
 
 const addMembersValidator = () => [

@@ -9,15 +9,26 @@ import { ErrorHandler } from "../utils/utility.js"
 
 const newGrpChat = tryCatch(async (req, res, next) => {
     const { name, members } = req.body
-    const allMembers = [...members, req.user]
+    const file = req.file
+    const parsedMembers = JSON.parse(members)
+    if (parsedMembers.length < 2) return next(new ErrorHandler(400, 'A group must have atleast 2 members'))
+    if (parsedMembers.length > 99) return next(new ErrorHandler(400, 'A group cannot have more than 100 members'))
+    if (!file) return next(new ErrorHandler(400, 'Please upload File Chavi'))
+    const allMembers = [...parsedMembers, req.user]
+    const chaviResult = await uploadToCloudinary([file])
+    const chavi = {
+        publicID: chaviResult[0].publicID,
+        url: chaviResult[0].url,
+    }
     const chat = await Chat.create({
         name,
         grpChat: true,
         members: allMembers,
-        admin: [req.user]
+        admin: [req.user],
+        chavi
     })
-    emitEvent(req, alert, members, `Welcome to ${name} Group`)
-    emitEvent(req, refetch_chats, members)
+    emitEvent(req, alert, parsedMembers, `Welcome to ${name} Group`)
+    emitEvent(req, refetch_chats, parsedMembers)
     res.status(201).json({ success: true, msg: 'Group Created', chat })
 })
 

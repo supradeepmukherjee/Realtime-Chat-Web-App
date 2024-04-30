@@ -18,6 +18,16 @@ const schema = new Schema({
         ref: 'ChatUser',
         max: 100
     }],
+    chavi: {
+        publicID: {
+            type: String,
+            required: true
+        },
+        url: {
+            type: String,
+            required: true
+        },
+    },
 },
     { timestamps: true }
 )
