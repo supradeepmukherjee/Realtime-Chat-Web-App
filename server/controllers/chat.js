@@ -33,13 +33,16 @@ const newGrpChat = tryCatch(async (req, res, next) => {
 })
 
 const getMyChats = tryCatch(async (req, res, next) => {
-    const chats = await Chat.find({ members: req.user }).populate('members', 'name chavi')
-    const transformedChats = chats.map(({ _id, name, members, grpChat, chavi }) => {
+    const chats = await Chat.find({ members: req.user }).populate('members', 'name chavi uName about createdAt')
+    const transformedChats = chats.map(({ _id, name, members, grpChat, chavi, createdAt }) => {
         const otherPerson = findOtherPerson(members, req.user)
         return {
             _id,
             grpChat,
             name: grpChat ? name : otherPerson.name,
+            about: grpChat ? '' : otherPerson.about,
+            uName: grpChat ? '' : otherPerson.uName,
+            createdAt: grpChat ? createdAt : otherPerson.createdAt,
             members: members.reduce((prev, curr) => {
                 if (curr._id.toString() !== req.user.toString()) prev.push(curr._id)
                 return prev

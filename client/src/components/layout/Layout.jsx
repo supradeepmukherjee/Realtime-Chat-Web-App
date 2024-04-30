@@ -12,7 +12,6 @@ import { incrementNotificationCount, setFreshNewMsgsAlert, setNewMsgsAlert } fro
 import { setIsDeleteMenu, setIsMobile, setSelectedDelChat } from '../../redux/reducers/misc'
 import { getSocket } from '../../socket'
 import ChatList from '../ChatList'
-import DelChatMenu from '../dialog/DelChatMenu'
 import Profile from '../shared/Profile'
 import Title from '../shared/Title'
 import Header from './Header'
@@ -74,7 +73,7 @@ const Layout = () => WrappedComponent => {
         return (
             <>
                 <Title />
-                <Header unreadChats={newMsgsAlert.length - 1} />
+                <Header unreadChats={newMsgsAlert.length} />
                 {(isLoading || unreadLoading) ? <Skeleton /> :
                     <Drawer open={isMobile} onClose={() => dispatch(setIsMobile(!isMobile))}>
                         <ChatList w='70vw' chats={data?.chats} id={id} deleteChatHandler={deleteChatHandler} newMsgsAlert={newMsgsAlert} />
@@ -110,10 +109,9 @@ const Layout = () => WrappedComponent => {
                             bgcolor: 'rgba(0,0,0,.8)'
                         }}
                         height='100%'>
-                        <Profile />
+                        <Profile data={data?.chats?.filter(({ _id }) => _id.toString() === id)[0]} id={id} />
                     </Grid>
                 </Grid>
-                {/* <DelChatMenu open={isDeleteMenu} closeHandler={closeDelChatMenu} anchorEl={anchorEl.current} selectedDelChat={selectedDelChat} /> */}
             </>)
     }
 }

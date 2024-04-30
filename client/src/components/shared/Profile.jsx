@@ -1,19 +1,60 @@
-import { Avatar as Chavi, Stack, Typography } from "@mui/material"
-import { Face, AlternateEmail as Username, CalendarMonth as Date, Info } from "@mui/icons-material"
+/* eslint-disable react/prop-types */
+import { Avatar as Chavi, Button, Stack, Typography } from "@mui/material"
+import { Face, AlternateEmail as Username, CalendarMonth as Date, Info, People } from "@mui/icons-material"
 import moment from 'moment'
-import { memo } from "react"
-import { useSelector } from "react-redux"
+import { memo, useEffect, useState } from "react"
 import { transformImg } from "../../lib/features"
+import { useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 
-const Profile = () => {
+const Profile = ({ data, id }) => {
     const { user } = useSelector(state => state.auth)
+    const [chavi, setChavi] = useState(user.chavi.url)
+    const [name, setName] = useState(user.name)
+    const [uName, setUname] = useState(user.uName)
+    const [about, setAbout] = useState(user.about)
+    const [createdAt, setCreatedAt] = useState(user.createdAt)
+    const [grpChat, setGrpChat] = useState(false)
+    const [myDetails, setMyDetails] = useState(true)
+    const [n, setN] = useState(0)
+    useEffect(() => {
+        if (data) {
+            if (myDetails) {
+                setName(user.name)
+                setUname(user.uName)
+                setAbout(user.about)
+                setCreatedAt(user.createdAt)
+                setChavi(user.chavi.url)
+                setGrpChat(data.grpChat)
+                setN(data.members.length)
+            }
+            else {
+                setName(data.name)
+                setUname(data.uName)
+                setAbout(data.about)
+                setCreatedAt(data.createdAt)
+                setChavi(data.chavi)
+                setGrpChat(data.grpChat)
+                setN(data.members.length)
+            }
+        }
+    }, [data, myDetails, user])
     return (
-        <Stack spacing='2rem' alignItems='center'>
-            <Chavi className='!w-48 !h-48 object-contain mb-4 border-white border-4' src={transformImg(user?.chavi?.url)} />
-            <ProfileDetail text={user?.name} label={'Name'} Icon={<Face />} />
-            <ProfileDetail text={user?.uName} label={'Username'} Icon={<Username />} />
-            <ProfileDetail text={user?.about} label={'About'} Icon={<Info />} />
-            <ProfileDetail text={moment(user?.createdAt).fromNow()} label={'Joined'} Icon={<Date />} />
+        <Stack spacing='1.6rem' alignItems='center'>
+            <Chavi className='!w-48 !h-48 object-contain mb-4 border-white border-4' src={transformImg(chavi)} />
+            <ProfileDetail text={name} label={`${myDetails ? 'My ' : ''}Name`} Icon={!(myDetails && grpChat) ? <Username /> : <Face />} />
+            {(myDetails) && <ProfileDetail text={uName} label={'Username'} Icon={<Username />} />}
+            <ProfileDetail text={(!myDetails && grpChat) ? n : about} label={(!myDetails && grpChat) ? 'Members' : 'About'} Icon={(!myDetails && grpChat) ? <People /> : <Info />} />
+            <ProfileDetail text={moment(createdAt).fromNow()} label={(!myDetails && grpChat) ? 'Created' : 'Joined'} Icon={<Date />} />
+            {(!myDetails && grpChat) &&
+                <Link to={`/groups?grp=${id}`}>
+                    <Button variant='contained'>
+                        Go to Group
+                    </Button>
+                </Link>}
+            {id && <Button variant='contained' onClick={() => setMyDetails(!myDetails)}>
+                see {myDetails ? (grpChat ? 'group' : 'friend') : 'personal'} details
+            </Button>}
         </Stack >
     )
 }
