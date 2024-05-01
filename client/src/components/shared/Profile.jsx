@@ -18,6 +18,7 @@ const Profile = ({ data, id }) => {
     const [myDetails, setMyDetails] = useState(true)
     const [n, setN] = useState(0)
     useEffect(() => {
+        console.log(user, 'profile user')
         if (data) {
             if (myDetails) {
                 setName(user.name)
@@ -36,6 +37,15 @@ const Profile = ({ data, id }) => {
                 setChavi(data.chavi)
                 setGrpChat(data.grpChat)
                 setN(data.members.length)
+            }
+        }
+        else {
+            if (myDetails) {
+                setChavi(user.chavi.url)
+                setName(user.name)
+                setUname(user.uName)
+                setAbout(user.about)
+                setCreatedAt(user.createdAt)
             }
         }
     }, [data, myDetails, user])

@@ -4,7 +4,7 @@ import { server } from '../constants/config'
 const api = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({ baseUrl: server }),
-    tagTypes: ['Chat', 'User'],
+    tagTypes: ['Chat', 'User', 'Dashboard'],
     endpoints: builder => ({
         myChats: builder.query({
             query: () => ({
@@ -176,8 +176,64 @@ const api = createApi({
             }),
             invalidatesTags: ['Chat']
         }),
+        getAdminData: builder.query({
+            query: () => ({
+                url: '/admin',
+                credentials: 'include'
+            }),
+            providesTags: ['Dashboard']
+        }),
+        getAdminUsers: builder.query({
+            query: () => ({
+                url: '/admin/users',
+                credentials: 'include'
+            }),
+            providesTags: ['Dashboard-Users']
+        }),
+        getAdminChats: builder.query({
+            query: () => ({
+                url: '/admin/chats',
+                credentials: 'include'
+            }),
+            providesTags: ['Dashboard-Chats']
+        }),
+        getAdminMsgs: builder.query({
+            query: () => ({
+                url: '/admin/msgs',
+                credentials: 'include'
+            }),
+            providesTags: ['Dashboard-Msgs']
+        }),
+        updateProfile: builder.mutation({
+            query: data => {
+                console.log(data)
+                return ({
+                    url: `/user/update-profile`,
+                    method: `PUT`,
+                    body: data,
+                    credentials: 'include'
+                })
+            },
+            invalidatesTags: ['User']
+        }),
+        updatePassword: builder.mutation({
+            query: data => ({
+                url: `/user/update-password`,
+                method: `PUT`,
+                body: data,
+                credentials: 'include'
+            }),
+            invalidatesTags: ['User']
+        }),
+        myProfile: builder.query({
+            query: () => ({
+                url: '/user/my-profile',
+                credentials: 'include'
+            }),
+            providesTags: ['User']
+        }),
     })
 })
 
 export default api
-export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery, useDelChatMutation, useLeaveGrpMutation, useGetOnlineQuery, useLazyLastSeenQuery, useUnreadQuery, useReadMutation, useLazyUnreadQuery, useToggleAdminMutation } = api
+export const { useMyChatsQuery, useLazySearchUserQuery, useSendRequestMutation, useGetNotificationsQuery, useAcceptRequestMutation, useChatDetailsQuery, useLazyGetMsgsQuery, useSendAttachmentsMutation, useMyGrpsQuery, useMyFriendsQuery, useNewGrpMutation, useRenameGrpMutation, useRemoveMemberMutation, useAddMembersMutation, useLazyMyFriendsQuery, useDelChatMutation, useLeaveGrpMutation, useGetOnlineQuery, useLazyLastSeenQuery, useUnreadQuery, useReadMutation, useLazyUnreadQuery, useToggleAdminMutation, useGetAdminDataQuery, useGetAdminChatsQuery, useGetAdminMsgsQuery, useGetAdminUsersQuery, useUpdateProfileMutation, useUpdatePasswordMutation, useLazyMyProfileQuery } = api

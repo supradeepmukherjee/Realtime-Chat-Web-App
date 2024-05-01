@@ -1,12 +1,14 @@
-import { Add, ExitToApp as LogoutIcon, Group, Menu, Notifications as NotificationIcon, Search as SearchIcon } from '@mui/icons-material'
-import { AppBar, Backdrop, Badge, Box, IconButton, Skeleton, Toolbar, Tooltip, Typography } from '@mui/material'
+import { Add, Delete, Edit, ExitToApp as LogoutIcon, Group, Menu, Notifications as NotificationIcon, Search as SearchIcon } from '@mui/icons-material'
+import { AppBar, Backdrop, Badge, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
 import { lazy, Suspense, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { setIsLogout, setIsMobile, setIsNewGrp, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
-import { incrementNotificationCount, resetNotificationCount, setNotificationCount } from '../../redux/reducers/chat'
-import { useGetNotificationsQuery } from '../../redux/api'
 import useErrors from '../../hooks/useErrors'
+import { useGetNotificationsQuery } from '../../redux/api'
+import { resetNotificationCount, setNotificationCount } from '../../redux/reducers/chat'
+import { setIsDelAccount, setIsEditAccount, setIsLogout, setIsMobile, setIsNewGrp, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
+import DelAccount from '../dialog/DelAccount'
+import EditAccount from '../dialog/EditAccount'
 const Search = lazy(() => import('../dialog/Search'))
 const Notification = lazy(() => import('../dialog/Notification'))
 const NewGroup = lazy(() => import('../dialog/NewGroup'))
@@ -15,7 +17,7 @@ const Logout = lazy(() => import('../dialog/Logout'))
 const Header = ({ unreadChats }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { isMobile, isSearch, isNotification, isNewGrp, isLogout } = useSelector(({ misc }) => misc)
+    const { isMobile, isSearch, isNotification, isNewGrp, isLogout, isDelAccount, isEditAccount } = useSelector(({ misc }) => misc)
     const { notificationCount } = useSelector(({ chat }) => chat)
     const { isLoading, data, error, isError, refetch } = useGetNotificationsQuery()
     useErrors([{ isError, error }])
@@ -62,6 +64,8 @@ const Header = ({ unreadChats }) => {
                             </Box>}
                             <Box sx={{ flexGrow: 1 }} />
                             <Box>
+                                <Button title='Delete Account' onClick={() => dispatch(setIsDelAccount(!isDelAccount))} icon={<Delete />} />
+                                <Button title='Update Account' onClick={() => dispatch(setIsEditAccount(!isEditAccount))} icon={<Edit />} />
                                 <Button title='Search User' onClick={() => dispatch(setIsSearch(!isSearch))} icon={<SearchIcon />} />
                                 <Button title='Create a Group' onClick={() => dispatch(setIsNewGrp(!isNewGrp))} icon={<Add />} />
                                 <Button title='Go to Groups' onClick={() => navigate('/groups')} icon={<Group />} />
@@ -71,6 +75,16 @@ const Header = ({ unreadChats }) => {
                         </Toolbar>
                     </AppBar>
                 </Box>
+                {isEditAccount &&
+                    <Suspense fallback={<Backdrop open />}>
+                        <EditAccount />
+                    </Suspense>
+                }
+                {isDelAccount &&
+                    <Suspense fallback={<Backdrop open />}>
+                        <DelAccount />
+                    </Suspense>
+                }
                 {isSearch &&
                     <Suspense fallback={<Backdrop open />}>
                         <Search />

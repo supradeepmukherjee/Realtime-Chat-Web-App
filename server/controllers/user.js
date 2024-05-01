@@ -7,6 +7,7 @@ import { Request } from '../models/Request.js'
 import { User } from '../models/User.js'
 import { cookieOptions, emitEvent, sendToken, uploadToCloudinary } from '../utils/features.js'
 import { ErrorHandler } from '../utils/utility.js'
+import { v2 } from 'cloudinary'
 
 const register = tryCatch(async (req, res, next) => {
     const { name, uName, password, about } = req.body
@@ -196,4 +197,38 @@ const markAsRead = tryCatch(async (req, res) => {
     res.status(200).json({ success: true, msg: 'Marked as Read' })
 })
 
-export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen, unreadChats, markAsRead }
+const updateProfile = tryCatch(async (req, res, next) => {
+    const { name, uName, about } = req.body
+    const file = req.file
+    console.log(name, uName, about)
+    const user = await User.findById(req.user)
+    if (!user) return next(new ErrorHandler(404, 'User not found'))
+    if (name) user.name = name
+    if (uName) user.uName = uName
+    if (about) user.about = about
+    if (file) {
+        await v2.uploader.destroy(user.chavi.publicID)
+        const chaviResult = await uploadToCloudinary([file])
+        const chavi = {
+            publicID: chaviResult[0].publicID,
+            url: chaviResult[0].url,
+        }
+        user.chavi = chavi
+    }
+    await user.save()
+    res.status(200).json({ success: true, msg: 'Profile Updated Successfully' })
+})
+
+const updatePassword = tryCatch(async (req, res, next) => {
+    const { old, newP } = req.body
+    const user = await User.findById(req.user).select('+password')
+    if (!user) return next(new ErrorHandler(404, 'User not found'))
+    if (!old || !newP) return next(new ErrorHandler(400, 'Please provide old & new password'))
+    const isMatch = await compare(old, user.password)
+    if (!isMatch) return next(new ErrorHandler(400, 'Old Password entered is incorrect'))
+    user.password = newP
+    await user.save()
+    res.status(200).json({ success: true, msg: 'Password Updated Successfully' })
+})
+
+export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen, unreadChats, markAsRead, updateProfile, updatePassword }
