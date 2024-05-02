@@ -1,16 +1,17 @@
 import { compare } from 'bcrypt'
+import { v2 } from 'cloudinary'
+import crypto from 'crypto'
 import { new_req, refetch_chats } from '../constants/events.js'
 import { findOtherPerson } from '../lib/helper.js'
 import { tryCatch } from '../middlewares/error.js'
 import { Chat } from '../models/Chat.js'
 import { Request } from '../models/Request.js'
 import { User } from '../models/User.js'
-import { cookieOptions, emitEvent, sendToken, uploadToCloudinary } from '../utils/features.js'
+import { cookieOptions, emitEvent, sendEmail, sendToken, uploadToCloudinary } from '../utils/features.js'
 import { ErrorHandler } from '../utils/utility.js'
-import { v2 } from 'cloudinary'
 
 const register = tryCatch(async (req, res, next) => {
-    const { name, uName, password, about } = req.body
+    const { name, uName, password, about, email } = req.body
     const file = req.file
     if (!file) return next(new ErrorHandler(400, 'Please upload Chavi'))
     const userExists = await User.find({ uName })
@@ -20,7 +21,7 @@ const register = tryCatch(async (req, res, next) => {
         publicID: chaviResult[0].publicID,
         url: chaviResult[0].url,
     }
-    const user = await User.create({ name, uName, password, chavi, about })
+    const user = await User.create({ name, uName, password, chavi, about, email })
     sendToken(res, user, 201, 'Registration Successful')
 })
 
@@ -198,14 +199,14 @@ const markAsRead = tryCatch(async (req, res) => {
 })
 
 const updateProfile = tryCatch(async (req, res, next) => {
-    const { name, uName, about } = req.body
+    const { name, uName, about, email } = req.body
     const file = req.file
-    console.log(name, uName, about)
     const user = await User.findById(req.user)
     if (!user) return next(new ErrorHandler(404, 'User not found'))
     if (name) user.name = name
     if (uName) user.uName = uName
     if (about) user.about = about
+    if (email) user.email = about
     if (file) {
         await v2.uploader.destroy(user.chavi.publicID)
         const chaviResult = await uploadToCloudinary([file])
@@ -231,4 +232,36 @@ const updatePassword = tryCatch(async (req, res, next) => {
     res.status(200).json({ success: true, msg: 'Password Updated Successfully' })
 })
 
-export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen, unreadChats, markAsRead, updateProfile, updatePassword }
+const forgotPassword = tryCatch(async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email })
+    if (!user) return next(new ErrorHandler(404, 'User not found'))
+    const resetToken = crypto.randomBytes(20).toString('hex')
+    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+    user.resetPasswordExpiry = Date.now() + 1800000
+    await user.save()
+    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`
+    const text = `Reset your password by clicking on the link below:\n\n ${resetUrl}`
+    try {
+        await sendEmail({ to: user.email, subject: 'Reset your password', text })
+        return res.status(200).json({ success: true, msg: `Email sent to ${user.email}` })
+    } catch (err) {
+        console.log(err);
+        user.resetPasswordToken = undefined
+        user.resetPasswordExpiry = undefined
+        await user.save()
+        return res.status(500).json({ success: false, msg: err.msg })
+    }
+})
+
+const resetPassword = tryCatch(async (req, res, next) => {
+    const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+    const user = await User.findOne({ resetPasswordToken, resetPasswordExpiry: { $gt: Date.now() } })
+    if (!user) return res.status(401).json({ success: false, msg: 'Token is invalid or has expired' })
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpiry = undefined
+    user.password = req.body.password
+    await user.save()
+    res.status(200).json({ success: true, msg: 'Password updated successful' })
+})
+
+export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen, unreadChats, markAsRead, updateProfile, updatePassword, forgotPassword, resetPassword }

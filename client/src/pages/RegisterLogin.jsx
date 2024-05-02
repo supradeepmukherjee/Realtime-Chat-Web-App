@@ -18,6 +18,8 @@ const RegisterLogin = () => {
   const [loading, setLoading] = useState(false)
   const [login, setLogin] = useState(true)
   const [show, setShow] = useState(false)
+  const [forgot, setForgot] = useState(false)
+  const [email, setEmail] = useState('')
   const [loginCredentials, setLoginCredentials] = useState({
     uName: '',
     password: ''
@@ -26,7 +28,8 @@ const RegisterLogin = () => {
     name: '',
     password: '',
     about: '',
-    uName: ''
+    uName: '',
+    email: ''
   })
   const [chavi, setChavi] = useState(null)
   const [chaviFile, setChaviFile] = useState(null)
@@ -54,6 +57,7 @@ const RegisterLogin = () => {
     formData.append('uName', userDetails.uName)
     formData.append('password', userDetails.password)
     formData.append('about', userDetails.about)
+    formData.append('email', userDetails.email)
     try {
       const { data } = await axios.post(`${server}/user/register`,
         formData,
@@ -94,6 +98,26 @@ const RegisterLogin = () => {
       setLoading(false)
     }
   }
+  const forgotPasswordHandler = async e => {
+    e.preventDefault()
+    const id = toast.loading('Sending Email...')
+    setLoading(true)
+    try {
+      const { data } = await axios.put(`${server}/user/forgot-password`,
+        { email },
+        {
+          withCredentials: true,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+      toast.success(data.msg, { id })
+    } catch (err) {
+      console.log(err)
+      toast.error(err?.response?.data?.msg || 'Something went wrong', { id })
+    } finally {
+      setLoading(false)
+    }
+  }
   useEffect(() => {
     if (user) return navigate('/')
     return () => {
@@ -101,7 +125,8 @@ const RegisterLogin = () => {
         name: '',
         password: '',
         about: '',
-        uName: ''
+        uName: '',
+        email: ''
       })
       setLoginCredentials({
         uName: '',
@@ -125,31 +150,32 @@ const RegisterLogin = () => {
         {login ?
           <>
             <Typography variant='h5'>
-              Login
+              {forgot ? 'Forgot Password' : 'Login'}
             </Typography>
-            <form onSubmit={loginHandler} className='w-full mt-4'>
-              <TextField required fullWidth label='Username' name='uName' margin='normal' value={loginCredentials.uName} onChange={loginCredentialsChangeHandler} />
-              <TextField
-                required
-                fullWidth
-                label='Password'
-                name='password'
-                margin='normal'
-                type={show ? 'text' : 'password'}
-                value={loginCredentials.password}
-                onChange={loginCredentialsChangeHandler}
-                InputProps={{
-                  endAdornment:
-                    <InputAdornment position='end'>
-                      <IconButton onClick={() => setShow(s => !s)}>
-                        {show ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                }}
-              />
+            <form onSubmit={forgot ? forgotPasswordHandler : loginHandler} className='w-full mt-4'>
+              <TextField required fullWidth label={forgot ? 'Email ID' : 'Username'} name={forgot ? 'email' : 'uName'} margin='normal' value={forgot ? email : loginCredentials.uName} onChange={forgot ? e => setEmail(e.target.value) : loginCredentialsChangeHandler} />
+              {!forgot &&
+                <TextField
+                  required
+                  fullWidth
+                  label='Password'
+                  name='password'
+                  margin='normal'
+                  type={show ? 'text' : 'password'}
+                  value={loginCredentials.password}
+                  onChange={loginCredentialsChangeHandler}
+                  InputProps={{
+                    endAdornment:
+                      <InputAdornment position='end'>
+                        <IconButton onClick={() => setShow(s => !s)}>
+                          {show ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                  }}
+                />}
               <div className="flex justify-center">
                 <Button variant='contained' type='submit' className='!mt-4' disabled={loading}>
-                  Login
+                  {forgot ? 'Send Link to Email' : 'Login'}
                 </Button>
               </div>
               <div className="flex justify-center">
@@ -158,6 +184,11 @@ const RegisterLogin = () => {
                 </Button>
               </div>
             </form>
+            <div className="flex justify-center">
+              <Button variant='outlined' onClick={() => setForgot(!forgot)} disabled={loading}>
+                {forgot ? 'Login now' : 'Forgot Password?'}
+              </Button>
+            </div>
           </>
           :
           <>
@@ -176,6 +207,7 @@ const RegisterLogin = () => {
             <form onSubmit={registerHandler} className='w-full mt-4'>
               <TextField required fullWidth label='Name' name='name' margin='dense' value={userDetails.name} onChange={userDetailsChangeHandler} />
               <TextField required fullWidth label='Username' name='uName' margin='dense' value={userDetails.uName} onChange={userDetailsChangeHandler} />
+              <TextField required fullWidth label='Email' name='email' margin='dense' value={userDetails.email} type='email' onChange={userDetailsChangeHandler} />
               <TextField required fullWidth label='About' name='about' margin='dense' value={userDetails.about} onChange={userDetailsChangeHandler} />
               <TextField
                 required

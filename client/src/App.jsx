@@ -18,6 +18,7 @@ const Dashboard = lazy(() => import('./pages/admin/Dashboard'))
 const Chats = lazy(() => import('./pages/admin/Chats'))
 const Msgs = lazy(() => import('./pages/admin/Msgs'))
 const Users = lazy(() => import('./pages/admin/Users'))
+const Reset = lazy(() => import('./pages/Reset'))
 
 function App() {
   const dispatch = useDispatch()
@@ -33,6 +34,7 @@ function App() {
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route exact path='/login' element={<RegisterLogin />} />
+            <Route exact path='/reset-password/:token' element={<Reset />} />
             <Route exact path='/admin' element={<Login />} />
             <Route element={
               <SocketProvider>

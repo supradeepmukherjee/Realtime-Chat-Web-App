@@ -17,6 +17,11 @@ const schema = new Schema({
         select: false,
         minLength: 8
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     about: {
         type: String,
         required: true,
@@ -39,7 +44,9 @@ const schema = new Schema({
             ref: 'ChatUser'
         },
         qty: Number
-    }]
+    }],
+    resetPasswordToken: String,
+    resetPasswordExpiry: Date,
 },
     { timestamps: true }
 )

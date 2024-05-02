@@ -12,6 +12,7 @@ const registerValidator = () => [
     body('uName', 'Please Enter Username').notEmpty(),
     body('password', 'Please Enter Password').notEmpty(),
     body('about', 'Please Enter About').notEmpty(),
+    body('email', 'Please Enter Email ID').notEmpty(),
 ]
 
 const loginValidator = () => [
@@ -60,4 +61,8 @@ const acceptRequestValidator = () => [
 
 const adminLoginValidator = () => [body('key', 'Please Enter the Key').notEmpty()]
 
-export { validateHandler, registerValidator, loginValidator, newGrpValidator, addMembersValidator, removeMemberValidator, sendAttachmentsValidator, chatIDValidator, renameGrpValidator, sendRequestValidator, acceptRequestValidator, adminLoginValidator, toggleAdminValidator }
+const forgotPasswordValidator = () => [body('email', 'Please Enter Email ID').notEmpty()]
+
+const resetPasswordValidator = () => [body('password', 'Please Enter Password').notEmpty()]
+
+export { validateHandler, registerValidator, loginValidator, newGrpValidator, addMembersValidator, removeMemberValidator, sendAttachmentsValidator, chatIDValidator, renameGrpValidator, sendRequestValidator, acceptRequestValidator, adminLoginValidator, toggleAdminValidator, forgotPasswordValidator, resetPasswordValidator }

@@ -3,6 +3,7 @@ import { connect } from "mongoose"
 import { v2 } from 'cloudinary'
 import { v4 as randomId } from 'uuid'
 import { getBase64, getSockets } from '../lib/helper.js'
+import mailer from 'nodemailer'
 
 const cookieOptions = {
     maxAge: 60 * 60 * 24 * 15000,
@@ -64,4 +65,17 @@ const delCloudinaryFiles = async id => {
 
 }
 
-export { connectDB, sendToken, cookieOptions, emitEvent, uploadToCloudinary, delCloudinaryFiles }
+const sendEmail = async ({ to, subject, text }) => {
+    const transporter = mailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD,
+        },
+    })
+    const mailOptions = { from: process.env.SMTP_MAIL, to, text, subject }
+    await transporter.sendMail(mailOptions)
+}
+
+export { connectDB, sendToken, cookieOptions, emitEvent, uploadToCloudinary, delCloudinaryFiles, sendEmail }

@@ -22,7 +22,8 @@ const EditAccount = () => {
     const [userDetails, setUserDetails] = useState({
         name: user.name,
         about: user.about,
-        uName: user.uName
+        uName: user.uName,
+        email: user.email
     })
     const [passwordDetails, setPasswordDetails] = useState({
         old: '',
@@ -53,6 +54,7 @@ const EditAccount = () => {
             if (user.name !== userDetails.name) formData.append('name', userDetails.name)
             if (user.uName !== userDetails.uName) formData.append('uName', userDetails.uName)
             if (user.about !== userDetails.about) formData.append('about', userDetails.about)
+            if (user.email !== userDetails.email) formData.append('email', userDetails.about)
             toast.dismiss()
             dispatch(setIsEditAccount(false))
             await updateProfile('Updating Profile', formData)
@@ -98,6 +100,7 @@ const EditAccount = () => {
                     xs: '1rem',
                     sm: '2.7rem'
                 }}
+                className='!pt-1 !pb-1 !overflow-x-hidden'
                 width='25rem'
                 spacing='2rem'>
                 <DialogTitle textAlign='center' variant='h5'>
@@ -138,6 +141,18 @@ const EditAccount = () => {
                         }}
                     />)}
 
+                    {!isPassword &&
+                        <TextField
+                            required
+                            fullWidth
+                            label='Email'
+                            name='email'
+                            margin='dense'
+                            value={userDetails.email}
+                            type='email'
+                            onChange={userDetailsChangeHandler}
+                        />}
+
                     <Stack direction='row' justifyContent='space-evenly' mt='1rem'>
                         <Button variant='outlined' color='error' onClick={() => dispatch(setIsEditAccount(!isEditAccount))}>
                             Cancel
@@ -147,7 +162,7 @@ const EditAccount = () => {
                         </Button>
                     </Stack>
                 </form>
-                <Button variant='contained' onClick={() => setIsPassword(!isPassword)}>
+                <Button className='!mt-4 !mb-4' variant='contained' onClick={() => setIsPassword(!isPassword)}>
                     I want to update my {isPassword ? 'Profile' : 'Password'}
                 </Button>
             </Stack>
