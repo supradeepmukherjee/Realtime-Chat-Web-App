@@ -178,7 +178,7 @@ const RegisterLogin = () => {
                   {forgot ? 'Send Link to Email' : 'Login'}
                 </Button>
               </div>
-              <div className="flex justify-center">
+              <div className="flex justify-center mt-4 mb-4">
                 <Button variant='outlined' onClick={() => setLogin(false)} disabled={loading}>
                   Don&apos;t have an account?
                 </Button>
@@ -232,8 +232,14 @@ const RegisterLogin = () => {
                   Register
                 </Button>
               </div>
-              <div className="flex justify-center">
-                <Button variant='outlined' onClick={() => setLogin(true)} disabled={loading}>
+              <div className="flex justify-center mt-4">
+                <Button
+                  variant='outlined'
+                  onClick={() => {
+                    setLogin(true)
+                    setForgot(false)
+                  }}
+                  disabled={loading}>
                   Already Registered?
                 </Button>
               </div>

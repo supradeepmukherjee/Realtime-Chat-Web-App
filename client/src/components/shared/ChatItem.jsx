@@ -30,7 +30,7 @@ const ChatItem = ({
     }
     return (
         <Link to={`/chat/${id}`}
-            onContextMenu={e => deleteChatHandler(e, id, grpChat)} sx={{ p: 0 }}
+            onContextMenu={() => deleteChatHandler(name, grpChat, id)} sx={{ p: 0 }}
             onClick={clickHandler}
         >
             <motion.div
