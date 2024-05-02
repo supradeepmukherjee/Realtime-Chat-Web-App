@@ -17,7 +17,9 @@ const initialState = {
         name: null,
         id: null,
         grp: false
-    }
+    },
+    isDelMsg: false,
+    selectedDelMsg: null
 }
 
 const miscSlice = createSlice({
@@ -63,8 +65,14 @@ const miscSlice = createSlice({
         setIsDelAccount: (state, action) => {
             state.isDelAccount = action.payload
         },
+        setIsDelMsg: (state, action) => {
+            state.isDelMsg = action.payload
+        },
+        setSelectedDelMsg: (state, action) => {
+            state.selectedDelMsg = action.payload
+        },
     }
 })
 
 export default miscSlice
-export const { setIsAddMember, setIsMobile, setIsNewGrp, setIsNotification, setIsSearch, setIsDelChat, setIsFileMenu, setIsLogout, setSelectedDelChat, setUploadingLoader, setIsDelGrp, setIsEditAccount, setIsDelAccount } = miscSlice.actions
+export const { setIsAddMember, setIsMobile, setIsNewGrp, setIsNotification, setIsSearch, setIsDelChat, setIsFileMenu, setIsLogout, setSelectedDelChat, setUploadingLoader, setIsDelGrp, setIsEditAccount, setIsDelAccount, setIsDelMsg, setSelectedDelMsg } = miscSlice.actions

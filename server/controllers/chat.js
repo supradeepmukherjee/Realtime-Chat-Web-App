@@ -264,4 +264,18 @@ const toggleAdmin = tryCatch(async (req, res, next) => {
     res.status(200).json({ success: true, msg: make ? 'Assigned Admin Rights' : 'Revoked Admin Rights' })
 })
 
-export { newGrpChat, getMyChats, getMyGrps, addMembers, removeMember, leaveGroup, sendAttachments, getGroupDetails, renameGrp, delGroup, getMsgs, toggleAdmin }
+const delMsg = tryCatch(async (req, res, next) => {
+    const msg = await Msg.findById(req.params.id)
+    if (!msg) return next(new ErrorHandler(404, 'Message Not Found'))
+    const publicIDs = []
+    if (msg.attachments.length > 0) msg.attachments.forEach(({ publicID }) => {
+        publicIDs.push(publicID)
+    })
+    await Promise.all([
+        delCloudinaryFiles(publicIDs),
+        Msg.deleteOne(msg),
+    ])
+    res.status(200).json({ success: true, msg: 'Message Deleted' })
+})
+
+export { newGrpChat, getMyChats, getMyGrps, addMembers, removeMember, leaveGroup, sendAttachments, getGroupDetails, renameGrp, delGroup, getMsgs, toggleAdmin, delMsg }

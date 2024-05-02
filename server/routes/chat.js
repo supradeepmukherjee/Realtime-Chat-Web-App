@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { addMembers, delGroup, getGroupDetails, getMsgs, getMyChats, getMyGrps, leaveGroup, newGrpChat, removeMember, renameGrp, sendAttachments, toggleAdmin } from '../controllers/chat.js'
+import { addMembers, delGroup, delMsg, getGroupDetails, getMsgs, getMyChats, getMyGrps, leaveGroup, newGrpChat, removeMember, renameGrp, sendAttachments, toggleAdmin } from '../controllers/chat.js'
 import { addMembersValidator, chatIDValidator, newGrpValidator, removeMemberValidator, renameGrpValidator, sendAttachmentsValidator, validateHandler, toggleAdminValidator } from '../lib/validators.js'
 import { multerAttachments, singleChavi } from '../middlewares/multer.js'
 
@@ -14,6 +14,7 @@ app.put('/leave/:id', chatIDValidator(), validateHandler, leaveGroup)
 app.post('/attachment', multerAttachments, sendAttachmentsValidator(), validateHandler, sendAttachments)
 app.get('/msg/:id', chatIDValidator(), validateHandler, getMsgs)
 app.put('/make-admin', toggleAdminValidator(), validateHandler, toggleAdmin)
+app.delete('/del-msg/:id', delMsg)
 app.route('/:id')
     .get(chatIDValidator(), validateHandler, getGroupDetails)
     .put(renameGrpValidator(), validateHandler, renameGrp)

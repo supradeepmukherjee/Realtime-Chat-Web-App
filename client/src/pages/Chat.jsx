@@ -1,6 +1,6 @@
 import { AttachFile, Send } from '@mui/icons-material'
-import { AppBar, IconButton, Skeleton, Stack } from '@mui/material'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { AppBar, Backdrop, IconButton, Skeleton, Stack } from '@mui/material'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,12 +12,12 @@ import Msg from '../components/shared/Msg'
 import { InputBox } from '../components/Styled'
 import { alert as ALERT, is_online, new_msg, start_typing, stop_typing, was_online } from '../constants/events'
 import useErrors from '../hooks/useErrors'
-import useMutation from '../hooks/useMutation'
 import useSocketEvents from '../hooks/useSocketEvents'
-import { useChatDetailsQuery, useGetOnlineQuery, useLazyGetMsgsQuery, useLazyLastSeenQuery, useReadMutation } from '../redux/api'
+import { useChatDetailsQuery, useGetOnlineQuery, useLazyGetMsgsQuery, useLazyLastSeenQuery } from '../redux/api'
 import { removeMsgsAlert } from '../redux/reducers/chat'
 import { setIsFileMenu } from '../redux/reducers/misc'
 import { getSocket } from '../socket'
+const DelMsg = lazy(() => import('../components/dialog/DelMsg'))
 
 const Chat = () => {
   const [msgs, setMsgs] = useState([])
@@ -35,7 +35,7 @@ const Chat = () => {
   const navigate = useNavigate()
   const [lastSeenQuery] = useLazyLastSeenQuery()
   const { user } = useSelector(({ auth }) => auth)
-  const { uploadingLoader } = useSelector(({ misc }) => misc)
+  const { uploadingLoader, isDelMsg } = useSelector(({ misc }) => misc)
   const { isLoading, data, error, isError } = useChatDetailsQuery({ id, skip: !id })
   const { isError: onlineIsError, error: onlineError, data: onlineData, isLoading: onlineLoading } = useGetOnlineQuery()
   const [getMsgs] = useLazyGetMsgsQuery()
@@ -179,7 +179,7 @@ const Chat = () => {
           }}>
             {online ? 'Online' : `Last seen at ${lastSeen}`}
           </AppBar>}
-        <div className={`box-border p-4 bg-[#f7f7f7] ${data.chat.grpChat ? 'h-[90%]' : 'h-[85%]'} flex flex-col-reverse overflow-x-hidden overflow-y-auto' id="scrollableDiv`}>
+        <div className={`box-border p-4 bg-[#f7f7f7] ${data.chat.grpChat ? 'h-[90%]' : 'h-[85%]'} flex flex-col-reverse overflow-x-hidden overflow-y-auto`} id="scrollableDiv">
           <InfiniteScroll
             hasMore={hasMore}
             dataLength={msgs?.length || 0}
@@ -209,6 +209,11 @@ const Chat = () => {
           </Stack>
         </form>
         <FileMenu anchorEl={anchorEl} id={id} />
+        {isDelMsg &&
+          <Suspense fallback={<Backdrop open />}>
+            <DelMsg setMsgs={setMsgs} />
+          </Suspense>
+        }
       </>
   )
 }

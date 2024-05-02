@@ -61,8 +61,21 @@ const uploadToCloudinary = async files => {
     }
 }
 
-const delCloudinaryFiles = async id => {
-
+const delCloudinaryFiles = async files => {
+    const delPromises = files.map(f =>
+        new Promise((resolve, reject) => {
+            v2.uploader.destroy(f, (err, result) => {
+                if (err) return reject(err)
+                resolve(result)
+            })
+        })
+    )
+    try {
+        await Promise.all(delPromises)
+    } catch (err) {
+        console.log(err)
+        throw new Error('Error deleting files in cloudinary', err)
+    }
 }
 
 const sendEmail = async ({ to, subject, text }) => {

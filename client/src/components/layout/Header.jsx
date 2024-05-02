@@ -7,8 +7,8 @@ import useErrors from '../../hooks/useErrors'
 import { useGetNotificationsQuery } from '../../redux/api'
 import { resetNotificationCount, setNotificationCount } from '../../redux/reducers/chat'
 import { setIsDelAccount, setIsEditAccount, setIsLogout, setIsMobile, setIsNewGrp, setIsNotification, setIsSearch } from '../../redux/reducers/misc'
-import DelAccount from '../dialog/DelAccount'
-import EditAccount from '../dialog/EditAccount'
+const DelAccount = lazy(() => import('../dialog/DelAccount'))
+const EditAccount = lazy(() => import('../dialog/EditAccount'))
 const Search = lazy(() => import('../dialog/Search'))
 const Notification = lazy(() => import('../dialog/Notification'))
 const NewGroup = lazy(() => import('../dialog/NewGroup'))
