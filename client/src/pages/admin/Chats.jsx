@@ -1,10 +1,12 @@
-import { Avatar as Chavi, Stack } from "@mui/material"
+import { Avatar as Chavi } from "@mui/material"
 import { useEffect, useState } from "react"
 import Layout from "../../components/layout/admin/Layout"
-import ChaviCard from '../../components/shared/ChaviCard'
+import { Loader } from "../../components/layout/Loader"
 import Table from "../../components/shared/Table"
-import { dashboardData } from "../../constants/sample"
+import useErrors from "../../hooks/useErrors"
 import { transformImg } from '../../lib/features'
+import ChaviCard from '../../components/shared/ChaviCard'
+import { useGetAdminChatsQuery } from "../../redux/api"
 
 const cols = [
   {
@@ -18,13 +20,19 @@ const cols = [
     headerName: 'Chavi',
     headerClassName: 'tableHeader',
     width: 150,
-    renderCell: params => <ChaviCard chavi={params.row.chavi} />
+    renderCell: params => <Chavi src={params.row.chavi} />
   },
   {
     field: 'name',
     headerName: 'Name',
     headerClassName: 'tableHeader',
     width: 300,
+  },
+  {
+    field: 'grpChat',
+    headerName: 'Group',
+    headerClassName: 'tableHeader',
+    width: 100,
   },
   {
     field: 'totalMembers',
@@ -46,38 +54,33 @@ const cols = [
     width: 120,
   },
   {
-    field: 'creator',
-    headerName: 'Created By',
+    field: 'admin',
+    headerName: 'Admin',
     headerClassName: 'tableHeader',
     width: 250,
-    renderCell: params => (
-      <Stack className='!flex-row items-center gap-4'>
-        <Chavi alt={params.row.creator.name} src={params.row.creator.chavi} />
-        <span>
-          {params.row.creator.name}
-        </span>
-      </Stack>
-    )
+    renderCell: params => <ChaviCard chavi={params.row.admin} max={100} />
   },
 ]
 
 const Chats = () => {
   const [rows, setRows] = useState([])
+  const { isLoading, data, error, isError } = useGetAdminChatsQuery()
+  useErrors([{ error, isError }])
   useEffect(() => {
-    setRows(dashboardData.chats.map(chat => ({
-      ...chat,
-      id: chat._id,
-      chavi: chat.chavi.map(c => transformImg(c, 50)),
-      members: chat.members.map(m => transformImg(m.chavi, 50)),
-      creator: {
-        name: chat.creator.name,
-        chavi: transformImg(chat.creator.chavi, 50)
-      }
-    })))
-  }, [])
+    if (data)
+      setRows(data.chats.map(chat => ({
+        ...chat,
+        id: chat._id,
+        chavi: chat.grpChat?.chavi ? transformImg(chat.chavi, 50) : null,
+        members: chat.members?.map(m => transformImg(m.chavi, 50)),
+        admin: chat.admin?.map(a => transformImg(a.chavi, 50)),
+      })))
+  }, [data])
   return (
     <Layout>
-      <Table title={'All Chats'} rows={rows} cols={cols} />
+      {isLoading ?
+        <Loader /> :
+        <Table title={'All Chats'} rows={rows} cols={cols} />}
     </Layout>
   )
 }

@@ -1,9 +1,11 @@
 import { Avatar as Chavi } from "@mui/material"
 import { useEffect, useState } from "react"
 import Layout from "../../components/layout/admin/Layout"
+import { Loader } from "../../components/layout/Loader"
 import Table from "../../components/shared/Table"
-import { dashboardData } from "../../constants/sample"
+import useErrors from "../../hooks/useErrors"
 import { transformImg } from '../../lib/features'
+import { useGetAdminUsersQuery } from "../../redux/api"
 
 const cols = [
   {
@@ -47,16 +49,21 @@ const cols = [
 
 const Users = () => {
   const [rows, setRows] = useState([])
+  const { isLoading, data, error, isError } = useGetAdminUsersQuery()
+  useErrors([{ error, isError }])
   useEffect(() => {
-    setRows(dashboardData.users.map(user => ({
-      ...user,
-      id: user._id,
-      chavi: transformImg(user.chavi,50)
-    })))
-  }, [])
+    if (data)
+      setRows(data.users?.map(user => ({
+        ...user,
+        id: user._id,
+        chavi: transformImg(user.chavi, 50)
+      })))
+  }, [data])
   return (
     <Layout>
-      <Table title={'All Users'} rows={rows} cols={cols} />
+      {isLoading ?
+        <Loader /> :
+      <Table title={'All Users'} rows={rows} cols={cols} />}
     </Layout>
   )
 }

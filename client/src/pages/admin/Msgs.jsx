@@ -2,10 +2,12 @@ import { Avatar as Chavi, Box, Stack } from "@mui/material"
 import moment from "moment"
 import { useEffect, useState } from "react"
 import Layout from "../../components/layout/admin/Layout"
-import Table from "../../components/shared/Table"
-import { dashboardData } from "../../constants/sample"
-import { fileFormat, transformImg } from '../../lib/features'
+import { Loader } from "../../components/layout/Loader"
 import RenderAttachment from '../../components/shared/RenderAttachment'
+import Table from "../../components/shared/Table"
+import useErrors from "../../hooks/useErrors"
+import { fileFormat, transformImg } from '../../lib/features'
+import { useGetAdminMsgsQuery } from "../../redux/api"
 
 const cols = [
   {
@@ -44,14 +46,15 @@ const cols = [
     width: 400,
     renderCell: params => {
       console.log(params.row)
-      return(
-      params.row.content === '' ?
-        'No Text'
-        :
-        <span>
-          {params.row.content}
-        </span>
-    )}
+      return (
+        params.row.content === '' ?
+          'No Text'
+          :
+          <span>
+            {params.row.content}
+          </span>
+      )
+    }
   },
   {
     field: 'sender',
@@ -75,7 +78,7 @@ const cols = [
   },
   {
     field: 'grpChat',
-    headerName: 'Group Chat',
+    headerName: 'Group',
     headerClassName: 'tableHeader',
     width: 100,
   },
@@ -89,20 +92,25 @@ const cols = [
 
 const Msgs = () => {
   const [rows, setRows] = useState([])
+  const { isLoading, data, error, isError } = useGetAdminMsgsQuery()
+  useErrors([{ error, isError }])
   useEffect(() => {
-    setRows(dashboardData.msgs.map(msg => ({
-      ...msg,
-      id: msg._id,
-      sender: {
-        name: msg.sender.name,
-        chavi: transformImg(msg.sender.chavi, 50)
-      },
-      createdAt: moment(msg.createdAt).format('MMMM Do YYYY, h:mm:ss a')
-    })))
-  }, [])
+    if (data)
+      setRows(data.msgs.map(msg => ({
+        ...msg,
+        id: msg._id,
+        sender: {
+          name: msg.sender.name,
+          chavi: transformImg(msg.sender.chavi, 50)
+        },
+        createdAt: moment(msg.createdAt).format('MMMM Do YYYY, h:mm:ss a')
+      })))
+  }, [data])
   return (
     <Layout>
-      <Table title={'All Messages'} rows={rows} cols={cols} rowHeight={200} />
+      {isLoading ?
+        <Loader /> :
+        <Table title={'All Messages'} rows={rows} cols={cols} rowHeight={200} />}
     </Layout>
   )
 }

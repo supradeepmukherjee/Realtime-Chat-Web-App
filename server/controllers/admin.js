@@ -17,12 +17,11 @@ const login = tryCatch(async (req, res, next) => {
         .json({ success: true, msg: 'Welcome Admin!' })
 })
 
-const getAdminData = (req, res) => res.status(200).json({ success: true, admin: true })
-
 const getUsers = tryCatch(async (req, res) => {
+    console.log('get users')
     const rawUsers = await User.find()
-        .populate('members', 'name chavi')
-        .populate('admin', 'name chavi')
+        .populate('name chavi')
+        .populate('name chavi')
     const users = await Promise.all(rawUsers.map(async ({ name, uName, chavi, _id }) => {
         const [grps, friends] = await Promise.all([
             Chat.countDocuments({
@@ -47,22 +46,22 @@ const getUsers = tryCatch(async (req, res) => {
 })
 
 const getChats = tryCatch(async (req, res) => {
-    const rawChats = await Chat.find()
-    const chats = await Promise.all(rawChats.map(async ({ name, grpChat, _id, members, admin }) => {
+    const rawChats = await Chat.find().populate('members admin')
+    const chats = await Promise.all(rawChats.map(async ({ name, grpChat, _id, members, admin, chavi }) => {
         const totalMsgs = await Msg.countDocuments({ chat: _id })
         return {
             _id,
             name,
             grpChat: grpChat ? 'Yes' : 'No',
             totalMsgs,
-            chavi: members.slice(0, 3).map(({ chavi }) => chavi.url),
+            chavi: grpChat ? chavi.url : members.map(({ chavi }) => chavi.url),
             totalMembers: members.length,
             members: members.map(({ _id, name, chavi }) => ({
                 _id,
                 name,
-                chavi: chavi
+                chavi: chavi.url
             })),
-            admin: admin.map(({ name, chavi }) => ({
+            admin: admin?.map(({ name, chavi }) => ({
                 name: name || 'None',
                 chavi: chavi.url || null
             })),
@@ -114,4 +113,4 @@ const logOut = tryCatch(async (req, res) => {
     res.status(200).cookie('admin', null, { ...cookieOptions, maxAge: 0 }).json({ success: true, msg: 'Logged Out Successfully' })
 })
 
-export { login, getAdminData, getUsers, getChats, getMsgs, getDashboardStats, logOut }
+export { login, getUsers, getChats, getMsgs, getDashboardStats, logOut }
