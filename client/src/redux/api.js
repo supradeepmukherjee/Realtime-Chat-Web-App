@@ -4,7 +4,7 @@ import { server } from '../constants/config'
 const api = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({ baseUrl: server }),
-    tagTypes: ['Chat', 'User', 'Dashboard'],
+    tagTypes: ['Chat', 'User', 'Dashboard', 'Dashboard-Users', 'Dashboard-Chats', 'Dashboard-Msgs'],
     endpoints: builder => ({
         myChats: builder.query({
             query: () => ({

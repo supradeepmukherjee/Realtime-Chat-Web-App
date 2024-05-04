@@ -128,16 +128,18 @@ const EditAccount = () => {
                         type={isPassword && !show ? 'password' : 'text'}
                         onChange={isPassword ? passwordDetailsChangeHandler : userDetailsChangeHandler}
                         key={name}
-                        InputProps={isPassword && {
+                        InputProps={{
                             endAdornment:
-                                <InputAdornment position='end'>
-                                    <IconButton onClick={() => setShowArr(showArr.map((s, index) => {
-                                        if (index === i) return !s
-                                        else return s
-                                    }))}>
-                                        {show ? <Visibility /> : <VisibilityOff />}
-                                    </IconButton>
-                                </InputAdornment>
+                                isPassword ?
+                                    <InputAdornment position='end'>
+                                        <IconButton onClick={() => setShowArr(showArr.map((s, index) => {
+                                            if (index === i) return !s
+                                            else return s
+                                        }))}>
+                                            {show ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                    : <></>
                         }}
                     />)}
 

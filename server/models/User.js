@@ -41,7 +41,7 @@ const schema = new Schema({
     unread: [{
         chat: {
             type: Types.ObjectId,
-            ref: 'ChatUser'
+            ref: 'Chat'
         },
         qty: Number
     }],

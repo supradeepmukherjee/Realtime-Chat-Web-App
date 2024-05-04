@@ -7,7 +7,8 @@ import { tryCatch } from '../middlewares/error.js'
 import { Chat } from '../models/Chat.js'
 import { Request } from '../models/Request.js'
 import { User } from '../models/User.js'
-import { cookieOptions, emitEvent, sendEmail, sendToken, uploadToCloudinary } from '../utils/features.js'
+import { Msg } from '../models/Msg.js'
+import { cookieOptions, delCloudinaryFiles, emitEvent, sendEmail, sendToken, uploadToCloudinary } from '../utils/features.js'
 import { ErrorHandler } from '../utils/utility.js'
 
 const register = tryCatch(async (req, res, next) => {
@@ -146,7 +147,6 @@ const getFriends = tryCatch(async (req, res) => {
         }
     })
     if (id) {
-        console.log('working')
         const chat = await Chat.findById(id)
         const availableFriends = friends.filter(({ _id }) => !chat.members.includes(_id))
         const allUsers = await User.find({
@@ -190,7 +190,7 @@ const unreadChats = tryCatch(async (req, res) => {
 
 const markAsRead = tryCatch(async (req, res) => {
     const user = await User.findById(req.params.id).select('unread')
-    if (user.unread.length > 0) {
+    if (user?.unread?.length > 0) {
         const readChats = user.unread?.filter(({ chat }) => chat?.toString() !== req.query.chat)
         user.unread = readChats
         await user.save()
@@ -256,7 +256,7 @@ const forgotPassword = tryCatch(async (req, res, next) => {
 const resetPassword = tryCatch(async (req, res, next) => {
     const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
     const user = await User.findOne({ resetPasswordToken, resetPasswordExpiry: { $gt: Date.now() } })
-    if (!user) return res.status(401).json({ success: false, msg: 'Token is invalid or has expired' })
+    if (!user) return next(new ErrorHandler(401, 'Token is invalid or has expired'))
     user.resetPasswordToken = undefined
     user.resetPasswordExpiry = undefined
     user.password = req.body.password
@@ -264,4 +264,47 @@ const resetPassword = tryCatch(async (req, res, next) => {
     res.status(200).json({ success: true, msg: 'Password updated successful' })
 })
 
-export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen, unreadChats, markAsRead, updateProfile, updatePassword, forgotPassword, resetPassword }
+const delAccount = tryCatch(async (req, res, next) => {
+    const [user, chats, msgs] = await Promise.all([
+        User.findById(req.user),
+        Chat.find({ members: req.user }),
+        Msg.find({ sender: req.user }),
+        Request.deleteMany({
+            $or: [
+                { sender: req.user },
+                { receiver: req.user },
+            ]
+        })
+    ])
+    if (!user) return next(new ErrorHandler(404, 'User not found'))
+    let toBeDeleted = []
+    let members = []
+    toBeDeleted.push(user.chavi.publicID)
+    for (let i = 0; i < chats.length; i++) {
+        const chat = chats[i];
+        members.push(chat.members)
+        if (chat.grpChat) {
+            if (chat.members.length < 4) return next(new ErrorHandler(401, 'No group can have less than 3 members'))
+            if (chat.admin.length < 2) return next(new ErrorHandler(401, 'Each Group must have atleast 1 admin'))
+            toBeDeleted.push(chat.chavi.publicID)
+        }
+    }
+    for (let i = 0; i < msgs.length; i++) {
+        const msg = msgs[i];
+        if (msg.attachments.length > 0) {
+            msg.attachments.forEach(a => {
+                toBeDeleted.push(a.publicID)
+            })
+        }
+    }
+    await Promise.all([
+        delCloudinaryFiles(toBeDeleted),
+        User.deleteOne({ _id: req.user }),
+        Chat.deleteMany({ members: req.user }),
+        Msg.deleteMany({ sender: req.user })
+    ])
+    emitEvent(req, refetch_chats, members)
+    res.status(200).json({ success: true, msg: 'Account Deleted Successfully' })
+})
+
+export { login, register, getMyProfile, logOut, searchUser, sendRequest, acceptRequest, getRequests, getFriends, getOnline, lastSeen, unreadChats, markAsRead, updateProfile, updatePassword, forgotPassword, resetPassword, delAccount }

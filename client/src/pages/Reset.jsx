@@ -1,8 +1,9 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material"
 import { Button, Container, IconButton, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
+import { useSelector } from "react-redux"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { server } from "../constants/config"
 import { passwordValidator } from "../utils/validators"
@@ -10,6 +11,7 @@ import { passwordValidator } from "../utils/validators"
 const Reset = () => {
     const { token } = useParams()
     const navigate = useNavigate()
+    const { user } = useSelector(({ auth }) => auth)
     const [show, setShow] = useState(false)
     const [show2, setShow2] = useState(false)
     const [password, setPassword] = useState('')
@@ -41,6 +43,16 @@ const Reset = () => {
             setLoading(false)
         }
     }
+    useEffect(() => {
+        if (user) return navigate('/')
+        return () => {
+            setPassword('')
+            setCpassword('')
+            setShow(false)
+            setShow2(false)
+            setLoading(false)
+        }
+    }, [navigate, user])
     return (
         <Container maxWidth='xs' className='h-screen !flex justify-center items-center' component='main'>
             <Paper
