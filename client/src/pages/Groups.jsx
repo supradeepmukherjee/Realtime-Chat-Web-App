@@ -71,7 +71,7 @@ const Groups = () => {
   }, [grpData?.chat?.members, grpData?.chat?.name])
   useErrors([
     { error, isError },
-    { grpError, grpIsError },
+    { error: grpError, isError: grpIsError },
   ])
   return (
     isLoading ? <Loader /> :

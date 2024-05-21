@@ -16,8 +16,9 @@ const useMutation = useMutation => {
             if (res.data) {
                 if (toastMsg !== 'Marked as Read') toast.success(res?.data?.msg || 'Success', { id: toastId })
                 setData(res.data)
-            } else
-                toast.error(res?.error?.data?.msg || 'Something went wrong', { id: toastId })
+            } else {
+                if (toastMsg !== 'Marked as Read') toast.error(res?.error?.data?.msg || 'Something went wrong', { id: toastId })
+            }
         } catch (err) {
             console.log(err)
             if (toastMsg !== 'Marked as Read') toast.error('Something went wrong', { id: toastId })

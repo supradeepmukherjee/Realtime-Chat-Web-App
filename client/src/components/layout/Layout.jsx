@@ -48,7 +48,7 @@ const Layout = () => WrappedComponent => {
         useSocketEvents(socket, eventHandlers)
         useErrors([
             { isError, error },
-            { unreadIsError, unreadError },
+            { isError: unreadIsError, error: unreadError },
         ])
         useEffect(() => {
             if (unreadData) {
