@@ -1,16 +1,22 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
 import useMutation from "../../hooks/useMutation"
-import { useDelChatMutation } from "../../redux/api"
+import { useDelChatMutation, useLazyUnreadQuery } from "../../redux/api"
+import { setFreshNewMsgsAlert } from "../../redux/reducers/chat"
 import { setIsDelChat } from "../../redux/reducers/misc"
 
 const DelChat = ({ name, grp, openClose }) => {
+    const { user } = useSelector(({ auth }) => auth)
     const { isDelChat, selectedDelChat } = useSelector(({ misc }) => misc)
     const [delChat, loading] = useMutation(useDelChatMutation)
+    const [getUnread] = useLazyUnreadQuery()
     const dispatch = useDispatch()
     const delChatHandler = async () => {
         dispatch(setIsDelChat(false))
-        delChat(`Deleting ${grp ? 'Group' : 'Chat'}`, selectedDelChat.id)
+        await delChat(`Deleting ${grp ? 'Group' : 'Chat'}`, selectedDelChat.id)
+        getUnread(user._id)
+            .then(({ data }) => dispatch(setFreshNewMsgsAlert(data.unread.unread)))
+            .catch(err => console.log(err))
     }
     return (
         <Dialog open={isDelChat} onClose={openClose}>

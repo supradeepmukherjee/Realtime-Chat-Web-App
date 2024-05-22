@@ -9,7 +9,8 @@ import { Link } from "../components/Styled"
 import useErrors from '../hooks/useErrors'
 import useMutation from '../hooks/useMutation'
 import { transformImg } from '../lib/features'
-import { useChatDetailsQuery, useDelChatMutation, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation, useToggleAdminMutation } from '../redux/api'
+import { useChatDetailsQuery, useDelChatMutation, useLazyUnreadQuery, useMyGrpsQuery, useRemoveMemberMutation, useRenameGrpMutation, useToggleAdminMutation } from '../redux/api'
+import { setFreshNewMsgsAlert } from '../redux/reducers/chat'
 import { setIsAddMember, setIsDelGrp } from '../redux/reducers/misc'
 const DeleteGrp = lazy(() => import('../components/dialog/DeleteGrp'))
 const AddMember = lazy(() => import('../components/dialog/AddMember'))
@@ -25,6 +26,7 @@ const Groups = () => {
   const { isAddMember, isDelGrp } = useSelector(({ misc }) => misc)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [getUnread] = useLazyUnreadQuery()
   const { isLoading, data, error, isError } = useMyGrpsQuery()
   const { data: grpData, error: grpError, isError: grpIsError } = useChatDetailsQuery(
     { id, populate: 1 },
@@ -32,14 +34,17 @@ const Groups = () => {
   )
   const [renameGrp, renameLoading] = useMutation(useRenameGrpMutation)
   const [removeMember, removeLoading] = useMutation(useRemoveMemberMutation)
-  const [delGrp, delLoading] = useMutation(useDelChatMutation)
+  const [delGrp] = useMutation(useDelChatMutation)
   const [toggleAdmin, toggleAdminLoading] = useMutation(useToggleAdminMutation)
   const toggleDelete = () => dispatch(setIsDelGrp(!isDelGrp))
   const toggleAddMember = () => dispatch(setIsAddMember(!isAddMember))
   const deleteHandler = async () => {
     navigate('/groups')
     dispatch(setIsDelGrp(false))
-    delGrp('Deleting Group', id)
+    await delGrp('Deleting Group', id)
+    getUnread(user._id)
+      .then(({ data }) => dispatch(setFreshNewMsgsAlert(data.unread.unread)))
+      .catch(err => console.log(err))
   }
   const removeHandler = userID => removeMember('Removing Member', { chatID: id, userID })
   const updateGrpName = async () => {

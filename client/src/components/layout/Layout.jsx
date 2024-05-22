@@ -7,7 +7,7 @@ import { new_msg_alert, new_req, refetch_chats } from '../../constants/events'
 import useErrors from '../../hooks/useErrors'
 import useMutation from '../../hooks/useMutation'
 import useSocketEvents from '../../hooks/useSocketEvents'
-import { useMyChatsQuery, useReadMutation, useUnreadQuery } from '../../redux/api'
+import { useLazyUnreadQuery, useMyChatsQuery, useReadMutation, useUnreadQuery } from '../../redux/api'
 import { incrementNotificationCount, setFreshNewMsgsAlert, setNewMsgsAlert } from '../../redux/reducers/chat'
 import { setIsMobile } from '../../redux/reducers/misc'
 import { getSocket } from '../../socket'
@@ -28,6 +28,7 @@ const Layout = () => WrappedComponent => {
         const { user } = useSelector(({ auth }) => auth)
         const { isLoading, data, isError, error, refetch } = useMyChatsQuery()
         const { isLoading: unreadLoading, data: unreadData, isError: unreadIsError, error: unreadError } = useUnreadQuery(user._id)
+        const [getUnread] = useLazyUnreadQuery()
         const socket = getSocket()
         const newMsgAlertHandler = useCallback(data => {
             if (data.id === id) return
@@ -36,10 +37,14 @@ const Layout = () => WrappedComponent => {
         const newReqListener = useCallback(() => {
             dispatch(incrementNotificationCount())
         }, [dispatch])
-        const refetchListener = useCallback(() => {
-            refetch()
+        const refetchListener = useCallback(async () => {
+            await refetch()
+            getUnread(user._id)
+                .then(({ data }) => dispatch(setFreshNewMsgsAlert(data.unread.unread)))
+                .catch(err => console.log(err))
             navigate('/')
-        }, [navigate, refetch])
+            console.log('refetched now')
+        }, [dispatch, getUnread, navigate, refetch, user._id])
         const eventHandlers = {
             [new_msg_alert]: newMsgAlertHandler,
             [new_req]: newReqListener,
@@ -62,7 +67,6 @@ const Layout = () => WrappedComponent => {
                 readChat('Marked as Read', { userID: user._id, chatID: id })
             }
         }, [id, user._id])
-        console.log(newMsgsAlert)
         return (
             <>
                 <Title />
